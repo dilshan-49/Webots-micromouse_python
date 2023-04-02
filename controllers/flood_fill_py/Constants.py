@@ -35,3 +35,6 @@ robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED, MODE)
 Maze_parameters = namedtuple('maze_parameters',
                               'ROWS COLUMNS MAZE_SIZE VISITED TARGET_CELL TILE_LENGTH')
 maze_parameters = Maze_parameters(ROWS, COLUMNS, MAZE_SIZE, VISITED, TARGET_CELL, TILE_LENGTH)
+
+Keys = namedtuple("keys", "forward left back right")
+keys = Keys('W', 'A', 'S', 'D')

@@ -27,8 +27,8 @@ if __name__ == "__main__":
     ps_right = robot.getPositionSensor("right wheel sensor")
     ps_right.enable(TIME_STEP)
 
-    left_motor.setVelocity(3.14)
-    right_motor.setVelocity(3.14)
+    left_motor.setVelocity(robot_parameters.SPEED)
+    right_motor.setVelocity(robot_parameters.SPEED)
     maze_map = [0] * maze_parameters.MAZE_SIZE
     distance = [255] * maze_parameters.MAZE_SIZE
     
@@ -39,9 +39,9 @@ if __name__ == "__main__":
     open = 1 #to open file 1 time
     robot_orientation = direction.NORTH
     map_functions.init_maze_map(maze_map)
-    keyboard = Keyboard()
-    keyboard.enable(TIME_STEP)
-    keys = ['W', 'A', 'S', 'D']
+    if robot_parameters.MODE == 1:
+        keyboard = Keyboard()
+        keyboard.enable(TIME_STEP)
     
     ps = [''] * 8
     ps_names = (
@@ -55,18 +55,17 @@ if __name__ == "__main__":
     tof = robot.getDistanceSensor('tof')
     tof.enable(TIME_STEP)
     
-
+    number_of_scans = 5
 
     while robot.step(TIME_STEP) != -1:
         
-        print('sensor tof {}',tof.getValue()) #do usuniecia
-        print('sensor ps0 {}',ps[0].getValue()) #do usuniecia
+        #print('sensor tof {}',tof.getValue()) #do usuniecia
+       # print('sensor ps0 {}',ps[0].getValue()) #do usuniecia
 
         avg2_right_sensor = 0    #ps2
         avg4_back_sensor = 0     #ps4
         avg5_left_sensor = 0     #ps5
         avg7_front_sensor = 0    #ps7
-        number_of_scans = 5
 
         #read distance sensors
         ps_values = [0] * 8
@@ -116,10 +115,10 @@ if __name__ == "__main__":
                 key = keyboard.get_key()
                 if key in keys:
                     match key:
-                        case 'W':
+                        case keys.forward:
                             print(key)
                             move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
-                        case 'D' | 'A' | 'S':
+                        case keys.right | keys.left | keys.back:
                             print(key)
                             move_functions.turn(robot, key, left_motor, right_motor, ps_left, ps_right)
             case 2: #search
@@ -130,18 +129,19 @@ if __name__ == "__main__":
                 map_functions.print_array(maze_map, 0)
                 print('MAPA')
 
-                map_functions.init_distance_map(distance, target) #reset path
+                distance = map_functions.init_distance_map(distance, target) #reset path
                 #map_functions.print_array(distance, 0)
                 algorythm_functions.floodfill(maze_map, 0, distance) #path
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
-                
-                if robot_orientation == move_direction: #move forward
-                    if left_wall and right_wall:
-                        #speed_correction
-                        move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
 
+                robot_orientation =  move_functions.move(robot_orientation, move_direction, left_wall, right_wall,avg5_left_sensor,avg2_right_sensor, robot, left_motor, right_motor, ps_left, ps_right)
 
+                robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
 
+                maze_map[robot_position] = maze_map[robot_position] | maze_parameters.VISITED   #mark visited tile
+
+                if robot_position == target:
+                    target = algorythm_functions.change_target(maze_map, robot_position, distance, target)
 
             case 3: #speedrun
                 print('speedrun')

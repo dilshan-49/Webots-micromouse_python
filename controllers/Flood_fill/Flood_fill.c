@@ -31,7 +31,7 @@
 #define COLUMNS 16
 #define MAZE_SIZE ROWS * COLUMNS //16x16
 #define VISITED 64
-#define MODE 3 // 1- keyboard, 2- search, 3 - speeedrun
+#define MODE 2 // 1- keyboard, 2- search, 3 - speeedrun
 
 //Sets correct target for used mode
 #if MODE == 3

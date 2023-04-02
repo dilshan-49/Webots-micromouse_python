@@ -25,7 +25,7 @@ def floodfill(maze_map, robot_position, distance):
                          distance[i + 1] = distance[i] +1   #update distance value on EAST tile
                          search = True
                 
-                if (map[i] & direction.WEST) != direction.WEST:
+                if (maze_map[i] & direction.WEST) != direction.WEST:
                     if distance[i - 1] == 255 or ((distance[i] +1) < distance[i - 1]):
                         distance[i - 1] = distance[i] + 1   #update distance value on WEST tile
                         search = True
@@ -107,6 +107,100 @@ def where_to_move(maze_map, robot_position, distance, robot_orientation):
                 move_direction = direction.WEST
 
     return move_direction
+
+
+''' change_orientation
+# @brief Change robot orientation basing on last orientation and last turn.
+#
+# @param robot_orientation: variable with actual robot orientation in global directions
+# @param action: variable with information where robot turns
+#
+# @retval robot_orientation: variable with updated robot orientation
+'''
+def change_orientation(robot_orientation, action):
+    match action:
+        case keys.right: #turn right
+            if robot_orientation == direction.WEST:
+                robot_orientation = direction.NORTH
+            else:
+                robot_orientation //= 2
+        case keys.left: #turn left
+            if robot_orientation == direction.NORTH:
+                robot_orientation = direction.WEST
+            else:
+                robot_orientation *= 2
+        case keys.back: #turn back
+            if robot_orientation == direction.NORTH or robot_orientation == direction.EAST:
+                robot_orientation //= 4
+            else:
+                robot_orientation *= 4
+    
+    print('orientacja:', robot_orientation)
+    
+    return robot_orientation
+
+''' change_position
+# @brief Update position of the robot basing on current orientation of the robot.
+#
+# @param robot_position: variable with robot position
+# @param robot_orientation: variable with actual robot orientation in global directions
+#
+# @retval robot_position: variable with updated robot position
+'''
+def change_position(robot_position, robot_orientation):
+    
+    if robot_orientation == direction.NORTH:
+        robot_position = robot_position + maze_parameters.COLUMNS
+    
+    elif robot_orientation == direction.EAST:
+        robot_position = robot_position + 1
+    elif robot_orientation == direction.SOUTH:
+        robot_position = robot_position - maze_parameters.COLUMNS
+    
+    elif robot_orientation == direction.WEST:
+        robot_position = robot_position - 1
+
+    return robot_position
+    
+''' change_target
+# @brief Marks every visited cell, after reaching targeted cell, change cell to first unvisited cell.
+# When reaching final target, saves distance map to file.
+#
+# @param maze_map: list with actual maze map with walls
+# @param robot_position: variable with actual robot position in maze
+# @param distance: list with actual distances values/path
+# @param target: variable with field number to which robot tries to get
+#
+# @retval target: variable with updated targetted field
+'''
+def change_target(maze_map, robot_position, distance, target):
+    
+    search = True
+    i = 0
+
+    while search: #search to find unvisited cell, otherwise end
+        
+        if not(maze_map[i] & maze_parameters.VISITED):
+            
+            target = i
+            search = False
+            print('target =', target)
+        else:
+            i += 1
+        
+        if i == 256:
+            target = 136
+            search = False
+            print('target =', target)
+
+    return target
+
+        
+
+
+
+
+      
 
 
 

@@ -20,38 +20,55 @@ def add_wall(maze_map, robot_position, robot_orientation, wall):
     #shift wall value
     if robot_orientation == direction.EAST:
         if wall != direction.WEST:
-            wall /= 2
+            wall //= 2
         else:
             wall = 8
     elif robot_orientation == direction.SOUTH:
         if wall == direction.WEST or  wall == direction.SOUTH:
             wall *= 4
         else:
-            wall /= 4
+            wall //= 4
     elif robot_orientation == direction.WEST:
         if wall != direction.NORTH:
             wall *= 2
         else:
             wall = 1
-    
+    print('maze type ',type(maze_map[robot_position]))
+    print('wall type', type(wall))
     maze_map[robot_position] = maze_map[robot_position] | wall #add sensed wall
     
     #add wall in neighbour field
     if wall == direction.NORTH:
+        
         robot_position = robot_position + maze_parameters.COLUMNS   #upper field
-        maze_map[robot_position] = maze_map[robot_position] | direction.SOUTH
+        check = robot_position in range(0,256)
+
+        if check:
+            maze_map[robot_position] = maze_map[robot_position] | direction.SOUTH
 
     if wall == direction.EAST:
+        
         robot_position = robot_position + 1     #left field
-        maze_map[robot_position] = maze_map[robot_position] | direction.WEST 
+        check = robot_position in range(0,256)
+
+        if check:
+            maze_map[robot_position] = maze_map[robot_position] | direction.WEST 
     
     if wall == direction.SOUTH:
+
         robot_position = robot_position - maze_parameters.COLUMNS   #lower field
-        maze_map[robot_position] = maze_map[robot_position] | direction.NORTH
+        check = robot_position in range(0,256)
+        
+        if check:
+            maze_map[robot_position] = maze_map[robot_position] | direction.NORTH
 
     if wall == direction.WEST:
+        
         robot_position = robot_position - 1     #right field
-        maze_map[robot_position] = maze_map[robot_position] | direction.EAST
+        check = robot_position in range(0,256)
+        
+        if check:
+            maze_map[robot_position] = maze_map[robot_position] | direction.EAST
 
 
 #init maze map with external walls
@@ -76,6 +93,8 @@ def init_maze_map(maze_map):
 def init_distance_map(distance, target):
     distance = [maze_parameters.MAZE_SIZE - 1] * maze_parameters.MAZE_SIZE
     distance[target] = 0
+
+    return distance
 
 #print array in a shape of maze (16x16 etc.)    
 def print_array(maze_map, action):
