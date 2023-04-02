@@ -2,7 +2,7 @@
 
 from Constants import *
 from map_functions import print_array
-
+import draw_maze
 
 #floodfill algorythm
 def floodfill(maze_map, robot_position, distance):
@@ -35,9 +35,9 @@ def floodfill(maze_map, robot_position, distance):
                         distance[i - maze_parameters.COLUMNS] = distance[i] + 1 #update distance value on SOUTH tile
                         search = True
             
-    print('\n TRASA ')
+    print('\n Path ')
     print_array(distance, 0)
-    print('\n TRASA ')
+    print('\n Path ')
 
 
 ''' where_to_move
@@ -192,6 +192,60 @@ def change_target(maze_map, robot_position, distance, target):
             target = 136
             search = False
             print('target =', target)
+
+    if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
+        print('KONIEC!!!!!!!')
+        path = open('path.txt','w')
+        
+        if path == None:
+            print('ERROR')
+            exit(1)
+        
+        for field in distance:
+            path.write('%i\n' % field)
+        
+        path.close()
+        
+        #Check that distance was correctly written to file
+        path = open('path.txt','r')
+        if path == None:
+            print('ERROR')
+            exit(1)
+        
+        distance_temp = []
+        for field in path:
+            distance_temp.append(int(field))
+        path.close()
+
+        print('############ KONCOWA TRASA ############')
+        print_array(distance_temp, 0) 
+
+        maze = open('maze.txt','w')
+        
+        if maze == None:
+            print('ERROR')
+            exit(1)
+        
+        for field in maze_map:
+            maze.write('%i\n' % field)
+        
+        maze.close()
+        
+        #Check that maze map was correctly written to file
+        maze = open('maze.txt','r')
+        if maze == None:
+            print('ERROR')
+            exit(1)
+        
+        maze_map_temp = []
+        for field in maze:
+            maze_map_temp.append(int(field))
+        maze.close()
+        print('############ KONCOWY LABIRYNT ############')
+        print_array(maze_map_temp, 1) 
+        draw_maze.draw_maze(maze_map_temp, distance_temp)
+        exit(0)
+            
 
     return target
 

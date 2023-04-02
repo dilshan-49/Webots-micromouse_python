@@ -124,7 +124,7 @@ def print_array(maze_map, action):
         i = 240
         k = 1
         while i >= 0:
-            print('{0:>3}'.format(maze_map[i]))
+            print('{0:>3}'.format(mapp_temp[i]), end = " ")
             if k == 16:
                 print('\n')
                 i -= 31  # 32 - 1 cuz no i++ in this loop iteration
