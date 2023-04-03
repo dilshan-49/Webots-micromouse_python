@@ -1,9 +1,16 @@
 from turtle import *
 from freegames import line
 
-
+''' draw_maze
+# @brief Create final maze with distance values with a use of turtle graphics.
+#
+# @param maze_map: list with actual maze map with walls
+# @param distance: list with actual distances values/path
+#
+# @retval None
+'''
 def draw_maze(maze_map, distance):
-    setup(1020, 1020, 1040, 360) #rozmiar i pozycja na ekranie
+    setup(1020, 1020, 1040, 360) #size and position on screen
     hideturtle()
     tracer(False)
     color('black')
@@ -30,7 +37,17 @@ def draw_maze(maze_map, distance):
     done()
 
 
-
+''' draw_wall
+# @brief Draw corresponding walls and values in each field.
+#
+# @param maze_map: list with actual maze map with walls
+# @param distance: list with actual distances values/path
+# @param x: variable with offest in x direction
+# @param y: variable with offest in y direction
+# @param size: value with one field size (for easier change when changing window size)
+#
+# @retval None
+'''
 def draw_wall(maze_map, distance, x, y, size):
     penup()
     goto(x + 8, y + 16)
@@ -85,17 +102,4 @@ def draw_wall(maze_map, distance, x, y, size):
             line(x, y, x + size, y)
             line(x, y, x, y + size)
             print('WTF POLE %i' % maze_map )
-
-
-def open_file(file_name):
-    maze = open(file_name, 'r')
-    if maze == None:
-        print('ERROR')
-        exit(1)
-
-    maze_map_temp = []
-    for field in maze:
-        maze_map_temp.append(int(field))
-    maze.close()
-    return maze_map_temp
 

@@ -4,8 +4,16 @@ from Constants import *
 from map_functions import print_array
 import draw_maze
 
-#floodfill algorythm
-def floodfill(maze_map, robot_position, distance):
+
+''' floodfill
+# @brief Floodfill algorythm which calculates shortest path to actual target based on actual maze map.
+#
+# @param maze_map: list with actual maze map with walls
+# @param distance: list with actual distances values/path
+#
+# @retval move_direction: variable with move direction to do
+'''
+def floodfill(maze_map, distance):
     
     search = True
 
@@ -37,7 +45,9 @@ def floodfill(maze_map, robot_position, distance):
             
     print('\n Path ')
     print_array(distance, 0)
-    print('\n Path ')
+    print(' Path ')
+
+    return distance
 
 
 ''' where_to_move
@@ -135,9 +145,11 @@ def change_orientation(robot_orientation, action):
             else:
                 robot_orientation *= 4
     
-    print('orientacja:', robot_orientation)
+    x = direction.index(robot_orientation)
+    print('orientacja:', direction._fields[x])
     
     return robot_orientation
+
 
 ''' change_position
 # @brief Update position of the robot basing on current orientation of the robot.
@@ -162,6 +174,7 @@ def change_position(robot_position, robot_orientation):
 
     return robot_position
     
+
 ''' change_target
 # @brief Marks every visited cell, after reaching targeted cell, change cell to first unvisited cell.
 # When reaching final target, saves distance map to file.
@@ -195,59 +208,55 @@ def change_target(maze_map, robot_position, distance, target):
 
     if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
         print('KONIEC!!!!!!!')
-        path = open('path.txt','w')
-        
-        if path == None:
-            print('ERROR')
-            exit(1)
-        
-        for field in distance:
-            path.write('%i\n' % field)
-        
-        path.close()
+
+        write_file('path.txt', distance)
         
         #Check that distance was correctly written to file
-        path = open('path.txt','r')
-        if path == None:
-            print('ERROR')
-            exit(1)
-        
-        distance_temp = []
-        for field in path:
-            distance_temp.append(int(field))
-        path.close()
+        distance_temp = read_file('path.txt')
 
         print('############ KONCOWA TRASA ############')
         print_array(distance_temp, 0) 
 
-        maze = open('maze.txt','w')
-        
-        if maze == None:
-            print('ERROR')
-            exit(1)
-        
-        for field in maze_map:
-            maze.write('%i\n' % field)
-        
-        maze.close()
-        
+        write_file('maze.txt', maze_map)
+    
         #Check that maze map was correctly written to file
-        maze = open('maze.txt','r')
-        if maze == None:
-            print('ERROR')
-            exit(1)
-        
-        maze_map_temp = []
-        for field in maze:
-            maze_map_temp.append(int(field))
-        maze.close()
+        maze_map_temp = read_file('maze.txt')
+
         print('############ KONCOWY LABIRYNT ############')
         print_array(maze_map_temp, 1) 
         draw_maze.draw_maze(maze_map_temp, distance_temp)
         exit(0)
             
-
     return target
+
+
+def read_file(file_name):
+        
+        file = open(file_name,'r')
+        if file == None:
+            print('ERROR')
+            exit(1)
+        
+        list_temp = []
+        for field in file:
+            list_temp.append(int(field))
+        file.close()
+        
+        return list_temp
+
+
+def write_file(file_name, list):
+        
+        file = open(file_name,'w')
+        
+        if file == None:
+            print('ERROR')
+            exit(1)
+        
+        for field in list:
+            file.write('%i\n' % field)
+        
+        file.close()
 
         
 

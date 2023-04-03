@@ -1,5 +1,4 @@
 #Move related functions
-from controller import Motor, PositionSensor
 from Constants import *
 from math import pi, fabs
 from algorythm_functions import change_orientation
@@ -78,9 +77,17 @@ def speed_correction(left_wall, right_wall, left_motor, right_motor):
             right_motor.setVelocity(robot_parameters.SPEED)
             left_motor.setVelocity(robot_parameters.SPEED * 0.98)
 
-
-
-
+''' move_1_tile
+# @brief Makes robot move forward to next maze cell.
+#
+# @param robot: object with robot instance
+# @param left_motor: object with left motor instance
+# @param right_motor: object with right motor instance
+# @param ps_left: object with left position sensor instance
+# @param ps_right: object with right position sensor instance
+#
+# @retv None
+'''
 def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right):
     
     revolutions = maze_parameters.TILE_LENGTH / robot_parameters.WHEEL #rev in radians
@@ -94,10 +101,22 @@ def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right):
     left_motor.setPosition(left_wheel_revolutions)
     right_motor.setPosition(right_wheel_revolutions)
     
-    print('prosto')
+    print('forward')
     wait_move_end(robot, ps_left, ps_right)
 
 
+''' turn
+# @brief Makes robot turn left, right or backward.
+#
+# @param robot: object with robot instance
+# @param move_direction: variable with direction where to move in global directions
+# @param left_motor: object with left motor instance
+# @param right_motor: object with right motor instance
+# @param ps_left: object with left position sensor instance
+# @param ps_right: object with right position sensor instance
+#
+# @retv None
+'''
 def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
 
     revolutions = (pi/2) * robot_parameters.AXLE / 2 / robot_parameters.WHEEL # in radians
@@ -114,25 +133,33 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
             right_wheel_revolutions -= revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('prawo')
+            print('right')
         case keys.left: #left
             left_wheel_revolutions -= revolutions
             right_wheel_revolutions += revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('lewo')
+            print('left')
         case keys.back: #back
             revolutions *= 2
             left_wheel_revolutions += revolutions
             right_wheel_revolutions -= revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('tyl')
+            print('back')
 
     wait_move_end(robot, ps_left, ps_right)
 
 
-
+''' wait_move_end
+# @brief Stops main loop execution until robot ends move.
+#
+# @param robot: object with robot instance
+# @param ps_left: object with left position sensor instance
+# @param ps_right: object with right position sensor instance
+#
+# @retv None
+'''
 def wait_move_end(robot, ps_left, ps_right):
 
     while True:

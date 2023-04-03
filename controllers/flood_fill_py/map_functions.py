@@ -33,8 +33,7 @@ def add_wall(maze_map, robot_position, robot_orientation, wall):
             wall *= 2
         else:
             wall = 1
-    print('maze type ',type(maze_map[robot_position]))
-    print('wall type', type(wall))
+
     maze_map[robot_position] = maze_map[robot_position] | wall #add sensed wall
     
     #add wall in neighbour field
@@ -71,7 +70,13 @@ def add_wall(maze_map, robot_position, robot_orientation, wall):
             maze_map[robot_position] = maze_map[robot_position] | direction.EAST
 
 
-#init maze map with external walls
+''' init_maze_map
+# @brief Initialize maze map with external walls.
+#
+# @param maze_map: list which contains maze map values
+#
+# @retv maze_map: Initialized maze map list
+'''
 def init_maze_map(maze_map):
     maze_map[0] = maze_map[0] | maze_parameters.VISITED #mark start as visited
 
@@ -87,17 +92,36 @@ def init_maze_map(maze_map):
     for i in range(15, 256, 16):
         maze_map[i] = maze_map[i] | direction.EAST
 
-    print_array(maze_map, 0)
+    #print_array(maze_map, 0)
 
-#init distance map with 255 and 0 as target (needed for floodfill algorythm)
+    return maze_map
+
+
+''' init_distance_map
+# @brief Initialize distance map with max values and 0 as target.
+# Target is 0 for floodfill algorythm working properly.
+#
+# @param distance: list which contains distance values
+# @param target: value which contains targetted cell
+#
+# @retv distance: Initialized distance list
+'''
 def init_distance_map(distance, target):
     distance = [maze_parameters.MAZE_SIZE - 1] * maze_parameters.MAZE_SIZE
     distance[target] = 0
 
     return distance
 
-#print array in a shape of maze (16x16 etc.)    
-def print_array(maze_map, action):
+   
+''' print_array
+# @brief print 256 element list as 16x16 in terminal.
+#
+# @param list: list which contains map or distance values
+# @param action: value which indicates to print map walls without visited cells
+#
+# @retv None
+'''
+def print_array(list, action):
 
     print("")
     if action == 0:     #just print array
@@ -105,7 +129,7 @@ def print_array(maze_map, action):
         i = 240
         k = 1
         while i >= 0:
-            print('{0:>3}'.format(maze_map[i]), end = " ")
+            print('{0:>3}'.format(list[i]), end = " ")
             if k == 16:
                 print('\n')
                 i -= 31     # 32 - 1 cuz no i++ in this loop iteration
@@ -115,16 +139,16 @@ def print_array(maze_map, action):
                 i += 1
     elif action == 1:   #print array without visited mark to read just walls
 
-        mapp_temp = maze_map.copy()
+        list_temp = list.copy()
 
-        for i in range(len(mapp_temp)):
-            if mapp_temp[i] and maze_parameters.VISITED:
-                mapp_temp[i] -= 64  #version to avoid negative values(errors etc.)  if(array[i] & VISITED) array[i] -= 64;
+        for i in range(len(list_temp)):
+            if list_temp[i] and maze_parameters.VISITED:
+                list_temp[i] -= 64  #version to avoid negative values(errors etc.)
         
         i = 240
         k = 1
         while i >= 0:
-            print('{0:>3}'.format(mapp_temp[i]), end = " ")
+            print('{0:>3}'.format(list_temp[i]), end = " ")
             if k == 16:
                 print('\n')
                 i -= 31  # 32 - 1 cuz no i++ in this loop iteration
@@ -132,4 +156,3 @@ def print_array(maze_map, action):
             else:
                 k += 1
                 i += 1
-    print('')
