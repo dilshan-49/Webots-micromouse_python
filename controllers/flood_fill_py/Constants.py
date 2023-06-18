@@ -5,7 +5,7 @@ TIME_STEP = 64
 TILE_LENGTH = 0.12 #tile length
 AXLE = 0.0568 #axle length 0.0568
 WHEEL = 0.02002 #wheel radius 0.02002
-SPEED = 2
+SPEED = 6
 
 #Walls values according to  direction (NORTH is not always forward etc.)
 WEST =      1    #  00000001 
@@ -17,7 +17,8 @@ ROWS =  16
 COLUMNS = 16
 MAZE_SIZE = ROWS * COLUMNS      #16x16
 VISITED = 64
-MODE = 2                        # 1- keyboard, 2- search, 3 - speeedrun
+MODE = 3                       # 1- keyboard, 2- search, 3 - speeedrun
+TESTING = 0  # 1- print sensors values etc. for testing, 0 - no prints
     
 #Sets correct target for used mode
 if MODE == 3:

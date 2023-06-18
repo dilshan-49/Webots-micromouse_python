@@ -2,21 +2,20 @@
 
 from controller import Robot, Keyboard
 from collections import namedtuple
-from threading import Thread
-
+from threading import Thread, Condition
 #my modules
 from Constants import *
 import map_functions
 import move_functions
 import algorythm_functions
 import draw_maze
-
+import var
 
 if __name__ == "__main__":
 
     # create the Robot instance.
     robot = Robot()
-
+    
     left_motor = robot.getDevice('left wheel motor')
     right_motor = robot.getDevice('right wheel motor')
 
@@ -32,16 +31,17 @@ if __name__ == "__main__":
     distance = [255] * maze_parameters.MAZE_SIZE
     
     target = maze_parameters.TARGET_CELL        #robot start target
-    robot_position = 0                          #robot start position
+    robot_position  = 0                          #robot start position
     move_direction = direction.NORTH            #where robot wants to move on start
     mode = robot_parameters.MODE                # 1- keyboard, 2- search, 3 - speeedrun
     open = 1                                    #to open file 1 time
     robot_orientation = direction.NORTH         #robot start orientation
     maze_map = map_functions.init_maze_map(maze_map)
+    var.maze_map_global = maze_map
     if robot_parameters.MODE == 1:
         keyboard = Keyboard()
         keyboard.enable(TIME_STEP)
-    
+
     ps = [''] * 8
     ps_names = (
         "ps0", "ps1", "ps2", "ps3",
@@ -55,48 +55,20 @@ if __name__ == "__main__":
     #tof = robot.getDistanceSensor('tof')
     tof = robot.getDevice('tof')
     tof.enable(TIME_STEP)
-    
-    number_of_scans = 5
 
     while robot.step(TIME_STEP) != -1:
         
         #print('sensor tof {}',tof.getValue()) #do usuniecia
-       # print('sensor ps0 {}',ps[0].getValue()) #do usuniecia
+        #print('sensor ps5 {}',ps[5].getValue()) #do usuniecia
 
-        avg2_right_sensor = 0    #ps2
-        avg4_back_sensor = 0     #ps4
-        avg5_left_sensor = 0     #ps5
-        avg7_front_sensor = 0    #ps7
+        #detect walls
+        #left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
+        
+        if TESTING:
+            print('sensor ps6 left {}',ps[6].getValue()) #do usuniecia
+        if TESTING:
+            print('sensor ps1 right {}',ps[1].getValue()) #do usuniecia
 
-        #read distance sensors
-        ps_values = [0] * 8
-
-        for i in range(0,number_of_scans): #more scans for better accuracy
-            
-            for i in range(0,8):
-                ps_values[i] = ps[i].getValue()
-
-            avg2_right_sensor += ps_values[2]
-
-            avg4_back_sensor += ps_values[4]
-
-            avg5_left_sensor += ps_values[5]
-
-            avg7_front_sensor += ps_values[7]
-
-            robot.step(TIME_STEP) #simulation update
-
-        #average score of sensors measurements
-        avg2_right_sensor = avg2_right_sensor / number_of_scans
-        avg4_back_sensor = avg4_back_sensor / number_of_scans
-        avg5_left_sensor = avg5_left_sensor / number_of_scans
-        avg7_front_sensor = avg7_front_sensor / number_of_scans
-
-        #Wall detection
-        left_wall = avg5_left_sensor > 80.0
-        front_wall = avg7_front_sensor > 80.0
-        right_wall = avg2_right_sensor > 80.0
-        back_wall = avg4_back_sensor > 80.0
 
         match mode:
             case 1: #keyboard
@@ -105,12 +77,21 @@ if __name__ == "__main__":
                     match key:
                         case keys.forward:
                             print(key)
-                            move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
+                            move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, left_wall, right_wall, ps)
                         case keys.right | keys.left | keys.back:
                             print(key)
                             move_functions.turn(robot, key, left_motor, right_motor, ps_left, ps_right)
 
             case 2: #search
+                
+                if open:
+                    #run in another thread to make it possible to look on it during robot run
+                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (var.maze_map_global, var.distance_global, 1), daemon = True)
+                    Maze_thread.start()
+                    
+                    open = 0
+
+                left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
 
                 if left_wall:
                     map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.WEST)
@@ -124,9 +105,9 @@ if __name__ == "__main__":
                 if back_wall:
                     map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.SOUTH)
 
-                print('MAZE MAP')
-                map_functions.print_array(maze_map, 0)
-                print('MAZE MAP')
+                # print('MAZE MAP')
+                # map_functions.print_array(maze_map, 0)
+                # print('MAZE MAP')
 
                 distance = map_functions.init_distance_map(distance, target) #reset path
 
@@ -134,36 +115,53 @@ if __name__ == "__main__":
 
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
 
-                robot_orientation =  move_functions.move(robot_orientation, move_direction, left_wall, right_wall,\
-                                                         avg5_left_sensor,avg2_right_sensor, robot, left_motor, right_motor, ps_left, ps_right)
+                robot_orientation =  move_functions.move(robot_orientation, move_direction,\
+                                                        robot, left_motor, right_motor, ps_left, ps_right, ps)
 
                 robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
-
+                
                 maze_map[robot_position] = maze_map[robot_position] | maze_parameters.VISITED   #mark visited tile
+
 
                 if robot_position == target:
                     target = algorythm_functions.change_target(maze_map, robot_position, distance, target)
+                
+                var.robot_pos = robot_position
+                var.maze_map_global = maze_map
+                if distance != var.distance_global:
+                    var.distance_global = distance
+                    var.distance_update = True
+                var.target_global = target
+                with var.con: #notify maze thread that robot position has changed
+                    var.pos_update = True
+                    var.con.notify()
 
             case 3: #speedrun
 
                 if open:
                     distance = algorythm_functions.read_file('path.txt')
                     maze_map = algorythm_functions.read_file('maze.txt')
-                    #draw_maze.draw_maze(maze_map, distance)
+
                     #run in another thread to make it possible to look on it during robot run
-                    thread = Thread(target = draw_maze.draw_maze, args = (maze_map, distance), daemon = True)
-                    thread.start()
+                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (maze_map, distance, 0), daemon = True)
+                    Maze_thread.start()
                     
                     open = 0
 
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
 
-                robot_orientation =  move_functions.move(robot_orientation, move_direction, left_wall, right_wall,\
-                                                         avg5_left_sensor,avg2_right_sensor, robot, left_motor, right_motor, ps_left, ps_right)
+                robot_orientation =  move_functions.move(robot_orientation, move_direction,\
+                                                        robot, left_motor, right_motor, ps_left, ps_right, ps)
                 
                 robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
+                
+                var.robot_pos = robot_position
+                with var.con: #notify maze thread that robot position has changed
+                    var.pos_update = True
+                    var.con.notify()
 
                 if robot_position == target:
                     print('Target reached')
+                    input("press any key to end")
                     exit(0)
                     

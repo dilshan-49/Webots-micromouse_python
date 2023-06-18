@@ -43,9 +43,9 @@ def floodfill(maze_map, distance):
                         distance[i - maze_parameters.COLUMNS] = distance[i] + 1 #update distance value on SOUTH tile
                         search = True
             
-    print('\n Path ')
-    print_array(distance, 0)
-    print(' Path ')
+    # print('\n Path ')
+    # print_array(distance, 0)
+    # print(' Path ')
 
     return distance
 
@@ -146,7 +146,9 @@ def change_orientation(robot_orientation, action):
                 robot_orientation *= 4
     
     x = direction.index(robot_orientation)
-    print('orientacja:', direction._fields[x])
+    
+    if TESTING:
+        print('orientacja:', direction._fields[x])
     
     return robot_orientation
 
@@ -197,14 +199,16 @@ def change_target(maze_map, robot_position, distance, target):
             
             target = i
             search = False
-            print('target =', target)
+            if TESTING:
+                print('target =', target)
         else:
             i += 1
         
         if i == 256:
             target = 136
             search = False
-            print('target =', target)
+            if TESTING:
+                print('target =', target)
 
     if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
         print('KONIEC!!!!!!!')
@@ -224,7 +228,8 @@ def change_target(maze_map, robot_position, distance, target):
 
         print('############ KONCOWY LABIRYNT ############')
         print_array(maze_map_temp, 1) 
-        draw_maze.draw_maze(maze_map_temp, distance_temp)
+        #draw_maze.draw_maze(maze_map_temp, distance_temp)
+        input("press any key to end")
         exit(0)
             
     return target

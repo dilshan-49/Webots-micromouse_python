@@ -2,6 +2,47 @@
 from Constants import *
 
 
+def detect_walls(robot, ps, number_of_scans):
+    
+    avg2_right_sensor = 0    #ps2
+    avg4_back_sensor = 0     #ps4
+    avg5_left_sensor = 0     #ps5
+    avg7_front_sensor = 0    #ps7
+
+    #read distance sensors
+    ps_values = [0] * 8
+    sensors_indexes = [2, 4, 5, 7]
+
+    for i in range(0,number_of_scans): #more scans for better accuracy
+    
+        for i in sensors_indexes:
+            ps_values[i] = ps[i].getValue()
+
+        avg2_right_sensor += ps_values[2]
+
+        avg4_back_sensor += ps_values[4]
+
+        avg5_left_sensor += ps_values[5]
+
+        avg7_front_sensor += ps_values[7]
+
+        robot.step(TIME_STEP) #simulation update
+
+    #average score of sensors measurements
+    avg2_right_sensor = avg2_right_sensor / number_of_scans
+    avg4_back_sensor = avg4_back_sensor / number_of_scans
+    avg5_left_sensor = avg5_left_sensor / number_of_scans
+    avg7_front_sensor = avg7_front_sensor / number_of_scans
+
+    #Wall detection
+    left_wall = avg5_left_sensor > 80.0
+    front_wall = avg7_front_sensor > 80.0
+    right_wall = avg2_right_sensor > 80.0
+    back_wall = avg4_back_sensor > 80.0
+
+    return left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor
+
+
 ''' add_wall
 # @brief Add wall according to distance sensors.
 # Depending on robot orientation, value in variable wall 

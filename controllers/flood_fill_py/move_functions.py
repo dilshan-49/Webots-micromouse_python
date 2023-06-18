@@ -2,7 +2,8 @@
 from Constants import *
 from math import pi, fabs
 from algorythm_functions import change_orientation
-
+from threading import Thread
+from map_functions import detect_walls
 
 ''' move
 # @brief Execute robot move based on its orientation and move direction.
@@ -19,32 +20,31 @@ from algorythm_functions import change_orientation
 #
 # @retv robot_orientation: variable with updated robot orientation in global directions
 '''
-def move(robot_orientation, move_direction, left_wall, right_wall, left_wall_distance, right_wall_distance, robot, left_motor, right_motor, ps_left, ps_right):
+def move(robot_orientation, move_direction,\
+            robot, left_motor, right_motor, ps_left, ps_right, ps):
     if robot_orientation == move_direction: #move forward
-        if left_wall and right_wall:
-            speed_correction(left_wall_distance, right_wall_distance, left_motor, right_motor)
-        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
+        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     elif (not( (robot_orientation == direction.WEST) and (move_direction == direction.NORTH) ) ) != \
         (not( (robot_orientation // 2) == move_direction) ):   #right, XOR, '!' to avoid nonzero values
         
         robot_orientation = change_orientation(robot_orientation, keys.right)
         turn(robot, keys.right, left_motor, right_motor, ps_left, ps_right)
-        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
+        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     elif (not((robot_orientation == direction.NORTH) and (move_direction == direction.WEST))) != \
             (not( (robot_orientation * 2) == move_direction) ): #left, XOR
         
         robot_orientation = change_orientation(robot_orientation, keys.left)
         turn(robot, keys.left, left_motor, right_motor, ps_left, ps_right)
-        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
+        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     elif ( not( (robot_orientation * 4) == move_direction)) != \
         (not( (robot_orientation // 4) == move_direction) ): #back, XOR
 
         robot_orientation = change_orientation(robot_orientation, keys.back)
         turn(robot, keys.back, left_motor, right_motor, ps_left, ps_right)
-        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right)
+        move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
     
     return robot_orientation
 
@@ -77,6 +77,133 @@ def speed_correction(left_wall, right_wall, left_motor, right_motor):
             right_motor.setVelocity(robot_parameters.SPEED)
             left_motor.setVelocity(robot_parameters.SPEED * 0.98)
 
+def read_sensors(robot, ps, number_of_scans):
+    
+    avg1_right_angle_sensor = 0    #ps1
+    avg6_left_angle_sensor = 0     #ps6
+
+    avg2_right_sensor = 0     #ps2
+    avg5_left_sensor = 0     #ps5
+
+    #read distance sensors
+    for i in range(0,number_of_scans): #more scans for better accuracy
+    
+        avg1_right_angle_sensor += ps[1].getValue()
+        avg6_left_angle_sensor += ps[6].getValue()
+
+        avg2_right_sensor += ps[2].getValue()
+        avg5_left_sensor += ps[5].getValue()
+
+        robot.step(TIME_STEP) #simulation update
+
+    #average score of sensors measurements
+    avg1_right_angle_sensor = avg1_right_angle_sensor / number_of_scans
+    avg6_left_angle_sensor = avg6_left_angle_sensor / number_of_scans
+    
+    avg2_right_sensor = avg2_right_sensor / number_of_scans
+    avg5_left_sensor = avg5_left_sensor / number_of_scans
+
+    left_wall = avg5_left_sensor > 80.0
+    right_wall = avg2_right_sensor > 80.0
+
+
+    return avg1_right_angle_sensor, avg6_left_angle_sensor, left_wall, right_wall
+
+''' speed_correction2
+# @brief Correct robot position according to distance sensors by changing motors speed.
+#
+# @param left_wall: value which indicates existance of left wall in this field
+# @param right_wall: value which indicates existance of right wall in this field
+# @param left_motor: object with left motor instance
+# @param right_motor: object with right motor instance
+#
+# @retv None
+'''
+def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
+    
+    while True:
+        distance_left_now = ps_left.getValue()
+        distance_right_now = ps_right.getValue()
+
+        #left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = detect_walls(robot, ps, 2)
+        right_angle_sensor, left_angle_sensor, left_wall, right_wall = read_sensors(robot, ps, 2)
+
+        previous_error = 0.00
+        error_integral = 0.00
+        P = 0.0005
+        I = 0.0001
+        D = 0
+        Middle = 75
+        
+        if left_wall and right_wall:
+        
+            error = left_angle_sensor - right_angle_sensor
+            
+            if TESTING:
+                print('error {}',error)
+
+            error_integral += error
+            error_derivative = (previous_error - error)
+            previous_error = error
+            MotorSpeed = P * error + I * error_integral + D * error_derivative
+            if MotorSpeed > 0.06:
+                MotorSpeed = 0.06
+            elif MotorSpeed < -0.06:
+                MotorSpeed = -0.06
+            
+            if TESTING:
+                print('speed {}',MotorSpeed)
+
+            left_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
+            right_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
+        elif left_wall:
+            error = left_angle_sensor - Middle
+            
+            if TESTING:
+                print('errorL {}',error)
+                
+            error_integral += error
+            error_derivative = (previous_error - error)
+            previous_error = error
+            MotorSpeed = P * error + I * error_integral + D * error_derivative
+            if MotorSpeed > 0.06:
+                MotorSpeed = 0.06
+            elif MotorSpeed < -0.06:
+                MotorSpeed = -0.06
+            
+            if TESTING:
+                print('speed {}',MotorSpeed)
+
+            left_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
+            right_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
+        elif right_wall:
+            error = right_angle_sensor - Middle
+            
+            if TESTING:
+                print('errorR {}',error)
+
+            error_integral += error
+            error_derivative = (previous_error - error)
+            previous_error = error
+            MotorSpeed = P * error + I * error_integral + D * error_derivative
+            if MotorSpeed > 0.06:
+                MotorSpeed = 0.06
+            elif MotorSpeed < -0.06:
+                MotorSpeed = -0.06
+            
+            if TESTING:
+                print('speed {}',MotorSpeed)
+
+            left_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
+            right_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
+    
+        distance_left_later = ps_left.getValue()
+        distance_right_later = ps_right.getValue()
+
+        if (distance_left_now == distance_left_later) and (distance_right_now == distance_right_later):
+            break
+
+    
 ''' move_1_tile
 # @brief Makes robot move forward to next maze cell.
 #
@@ -88,7 +215,7 @@ def speed_correction(left_wall, right_wall, left_motor, right_motor):
 #
 # @retv None
 '''
-def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right):
+def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps):
     
     revolutions = maze_parameters.TILE_LENGTH / robot_parameters.WHEEL #rev in radians
     
@@ -97,12 +224,18 @@ def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right):
 
     left_wheel_revolutions += revolutions
     right_wheel_revolutions += revolutions
-    
+
+    left_motor.setVelocity(robot_parameters.SPEED)
+    right_motor.setVelocity(robot_parameters.SPEED)
+
     left_motor.setPosition(left_wheel_revolutions)
     right_motor.setPosition(right_wheel_revolutions)
+    PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right)
     
-    print('forward')
-    wait_move_end(robot, ps_left, ps_right)
+    if TESTING:
+        print('forward')
+
+    #wait_move_end(robot, ps_left, ps_right)
 
 
 ''' turn
@@ -124,8 +257,8 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
     left_wheel_revolutions = ps_left.getValue()
     right_wheel_revolutions = ps_right.getValue()
 
-    left_motor.setVelocity(robot_parameters.SPEED)
-    right_motor.setVelocity(robot_parameters.SPEED)
+    left_motor.setVelocity(robot_parameters.SPEED * 0.33)
+    right_motor.setVelocity(robot_parameters.SPEED * 0.33)
 
     match move_direction:
         case keys.right: #right
@@ -133,20 +266,26 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
             right_wheel_revolutions -= revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('right')
+            
+            if TESTING:
+                print('right')
         case keys.left: #left
             left_wheel_revolutions -= revolutions
             right_wheel_revolutions += revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('left')
+            
+            if TESTING:
+                print('left')
         case keys.back: #back
             revolutions *= 2
             left_wheel_revolutions += revolutions
             right_wheel_revolutions -= revolutions
             left_motor.setPosition(left_wheel_revolutions)
             right_motor.setPosition(right_wheel_revolutions)
-            print('back')
+            
+            if TESTING:
+                print('back')
 
     wait_move_end(robot, ps_left, ps_right)
 
