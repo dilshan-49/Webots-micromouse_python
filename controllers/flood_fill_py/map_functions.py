@@ -1,8 +1,21 @@
 #Map updating functions
 from Constants import *
 
-
-def detect_walls(robot, ps, number_of_scans):
+''' detect_walls
+# @brief Read and process sensors to detect walls
+#
+# @param robot: object with robot instance
+# @param ps: list of distance sensors objects
+# @param number_of_reads: variable which indicates how many times to read sensors
+#
+# @retval left_wall: variable which indicates left wall presence
+# @retval front_wall: variable which indicates front wall presence
+# @retval right_wall: variable which indicates right wall presence
+# @retval back_wall: variable which indicates back wall presence
+# @retval avg5_left_sensor variable with left sensor value
+# @retval avg2_right_sensor: variable with right sensor value
+'''
+def detect_walls(robot, ps, number_of_reads):
     
     avg2_right_sensor = 0    #ps2
     avg4_back_sensor = 0     #ps4
@@ -13,7 +26,7 @@ def detect_walls(robot, ps, number_of_scans):
     ps_values = [0] * 8
     sensors_indexes = [2, 4, 5, 7]
 
-    for i in range(0,number_of_scans): #more scans for better accuracy
+    for i in range(0,number_of_reads): #more scans for better accuracy
     
         for i in sensors_indexes:
             ps_values[i] = ps[i].getValue()
@@ -29,10 +42,10 @@ def detect_walls(robot, ps, number_of_scans):
         robot.step(TIME_STEP) #simulation update
 
     #average score of sensors measurements
-    avg2_right_sensor = avg2_right_sensor / number_of_scans
-    avg4_back_sensor = avg4_back_sensor / number_of_scans
-    avg5_left_sensor = avg5_left_sensor / number_of_scans
-    avg7_front_sensor = avg7_front_sensor / number_of_scans
+    avg2_right_sensor = avg2_right_sensor / number_of_reads
+    avg4_back_sensor = avg4_back_sensor / number_of_reads
+    avg5_left_sensor = avg5_left_sensor / number_of_reads
+    avg7_front_sensor = avg7_front_sensor / number_of_reads
 
     #Wall detection
     left_wall = avg5_left_sensor > 80.0
@@ -52,60 +65,60 @@ def detect_walls(robot, ps, number_of_scans):
 # @param maze_map: list with actual maze map with walls
 # @param robot_position: actual robot position in maze
 # @param robot_orientation: actual robot orientation in global directions
-# @param wall: value which indicates on which side of robot wall was detected
+# @param detected_wall: value which indicates on which side of robot wall was detected
 #
 # @retval None.
 '''
-def add_wall(maze_map, robot_position, robot_orientation, wall):
+def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
     
     #shift wall value
     if robot_orientation == direction.EAST:
-        if wall != direction.WEST:
-            wall //= 2
+        if detected_wall != direction.WEST:
+            detected_wall //= 2
         else:
-            wall = 8
+            detected_wall = direction.NORTH
     elif robot_orientation == direction.SOUTH:
-        if wall == direction.WEST or  wall == direction.SOUTH:
-            wall *= 4
+        if detected_wall == direction.WEST or  detected_wall == direction.SOUTH:
+            detected_wall *= 4
         else:
-            wall //= 4
+            detected_wall //= 4
     elif robot_orientation == direction.WEST:
-        if wall != direction.NORTH:
-            wall *= 2
+        if detected_wall != direction.NORTH:
+            detected_wall *= 2
         else:
-            wall = 1
+            detected_wall = direction.WEST
 
-    maze_map[robot_position] = maze_map[robot_position] | wall #add sensed wall
+    maze_map[robot_position] = maze_map[robot_position] | detected_wall #add sensed wall
     
     #add wall in neighbour field
-    if wall == direction.NORTH:
+    if detected_wall == direction.NORTH:
         
         robot_position = robot_position + maze_parameters.COLUMNS   #upper field
-        check = robot_position in range(0,256)
+        check = robot_position in range(0, maze_parameters.MAZE_SIZE)
 
         if check:
             maze_map[robot_position] = maze_map[robot_position] | direction.SOUTH
 
-    if wall == direction.EAST:
+    if detected_wall == direction.EAST:
         
         robot_position = robot_position + 1     #left field
-        check = robot_position in range(0,256)
+        check = robot_position in range(0, maze_parameters.MAZE_SIZE)
 
         if check:
             maze_map[robot_position] = maze_map[robot_position] | direction.WEST 
     
-    if wall == direction.SOUTH:
+    if detected_wall == direction.SOUTH:
 
         robot_position = robot_position - maze_parameters.COLUMNS   #lower field
-        check = robot_position in range(0,256)
+        check = robot_position in range(0, maze_parameters.MAZE_SIZE)
         
         if check:
             maze_map[robot_position] = maze_map[robot_position] | direction.NORTH
 
-    if wall == direction.WEST:
+    if detected_wall == direction.WEST:
         
         robot_position = robot_position - 1     #right field
-        check = robot_position in range(0,256)
+        check = robot_position in range(0, maze_parameters.MAZE_SIZE)
         
         if check:
             maze_map[robot_position] = maze_map[robot_position] | direction.EAST
@@ -167,33 +180,33 @@ def print_array(list, action):
     print("")
     if action == 0:     #just print array
 
-        i = 240
-        k = 1
-        while i >= 0:
-            print('{0:>3}'.format(list[i]), end = " ")
-            if k == 16:
+        index = 240
+        row_index = 0
+        while index >= 0:
+            print('{0:>3}'.format(list[index]), end = " ")
+            if row_index == 15:
                 print('\n')
-                i -= 31     # 32 - 1 cuz no i++ in this loop iteration
-                k = 1
+                index -= 31     # 32 - 1 cuz no i++ in this loop iteration
+                row_index = 0
             else:
-                k += 1
-                i += 1
+                row_index += 1
+                index += 1
     elif action == 1:   #print array without visited mark to read just walls
 
         list_temp = list.copy()
 
-        for i in range(len(list_temp)):
-            if list_temp[i] and maze_parameters.VISITED:
-                list_temp[i] -= 64  #version to avoid negative values(errors etc.)
+        for index in range(len(list_temp)):
+            if list_temp[index] and maze_parameters.VISITED:
+                list_temp[index] -= 64  #version to avoid negative values(errors etc.)
         
-        i = 240
-        k = 1
-        while i >= 0:
-            print('{0:>3}'.format(list_temp[i]), end = " ")
-            if k == 16:
+        index = 240
+        row_index = 0
+        while index >= 0:
+            print('{0:>3}'.format(list_temp[index]), end = " ")
+            if row_index == 15:
                 print('\n')
-                i -= 31  # 32 - 1 cuz no i++ in this loop iteration
-                k = 1
+                index -= 31  # 32 - 1 cuz no i++ in this loop iteration
+                row_index = 0
             else:
-                k += 1
-                i += 1
+                row_index += 1
+                index += 1

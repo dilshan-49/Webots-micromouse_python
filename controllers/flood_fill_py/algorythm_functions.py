@@ -2,7 +2,6 @@
 
 from Constants import *
 from map_functions import print_array
-import draw_maze
 
 
 ''' floodfill
@@ -147,7 +146,7 @@ def change_orientation(robot_orientation, action):
     
     x = direction.index(robot_orientation)
     
-    if TESTING:
+    if mode_params.TESTING:
         print('orientacja:', direction._fields[x])
     
     return robot_orientation
@@ -199,7 +198,7 @@ def change_target(maze_map, robot_position, distance, target):
             
             target = i
             search = False
-            if TESTING:
+            if mode_params.TESTING:
                 print('target =', target)
         else:
             i += 1
@@ -207,7 +206,7 @@ def change_target(maze_map, robot_position, distance, target):
         if i == 256:
             target = 136
             search = False
-            if TESTING:
+            if mode_params.TESTING:
                 print('target =', target)
 
     if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
@@ -234,7 +233,13 @@ def change_target(maze_map, robot_position, distance, target):
             
     return target
 
-
+''' read_file
+# @brief Read file
+#
+# @param file_name: variable with a file name
+#
+# @retval list_temp: list with a content of a file
+'''
 def read_file(file_name):
         
         file = open(file_name,'r')
@@ -249,7 +254,13 @@ def read_file(file_name):
         
         return list_temp
 
-
+''' write_file
+# @brief Write file
+#
+# @param file_name: variable with a file name
+# @param: list: list with a content to write file
+# @retval None
+'''
 def write_file(file_name, list):
         
         file = open(file_name,'w')

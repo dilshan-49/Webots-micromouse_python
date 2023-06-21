@@ -33,12 +33,12 @@ if __name__ == "__main__":
     target = maze_parameters.TARGET_CELL        #robot start target
     robot_position  = 0                          #robot start position
     move_direction = direction.NORTH            #where robot wants to move on start
-    mode = robot_parameters.MODE                # 1- keyboard, 2- search, 3 - speeedrun
-    open = 1                                    #to open file 1 time
+    mode = mode_params.MODE                # 1- keyboard, 2- search, 3 - speeedrun
+    start = 1                                    #to open file 1 time
     robot_orientation = direction.NORTH         #robot start orientation
     maze_map = map_functions.init_maze_map(maze_map)
     var.maze_map_global = maze_map
-    if robot_parameters.MODE == 1:
+    if mode_params.MODE == mode_params.KEYBOARD:
         keyboard = Keyboard()
         keyboard.enable(TIME_STEP)
 
@@ -48,25 +48,20 @@ if __name__ == "__main__":
           "ps4", "ps5", "ps6", "ps7"
     )
     for i in range(len(ps_names)):
-        #ps[i] = robot.getDistanceSensor(ps_names[i])
         ps[i] = robot.getDevice(ps_names[i])
         ps[i].enable(TIME_STEP)
     
-    #tof = robot.getDistanceSensor('tof')
     tof = robot.getDevice('tof')
     tof.enable(TIME_STEP)
 
     while robot.step(TIME_STEP) != -1:
-        
-        #print('sensor tof {}',tof.getValue()) #do usuniecia
-        #print('sensor ps5 {}',ps[5].getValue()) #do usuniecia
+        if mode_params.TESTING:
+            print('sensor tof {}',tof.getValue()) #do usuniecia
+            #print('sensor ps5 {}',ps[5].getValue()) #do usuniecia
 
-        #detect walls
-        #left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
-        
-        if TESTING:
+        if mode_params.TESTING:
             print('sensor ps6 left {}',ps[6].getValue()) #do usuniecia
-        if TESTING:
+        if mode_params.TESTING:
             print('sensor ps1 right {}',ps[1].getValue()) #do usuniecia
 
 
@@ -77,19 +72,19 @@ if __name__ == "__main__":
                     match key:
                         case keys.forward:
                             print(key)
-                            move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, left_wall, right_wall, ps)
+                            move_functions.move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
                         case keys.right | keys.left | keys.back:
                             print(key)
                             move_functions.turn(robot, key, left_motor, right_motor, ps_left, ps_right)
 
             case 2: #search
                 
-                if open:
+                if start:
                     #run in another thread to make it possible to look on it during robot run
-                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (var.maze_map_global, var.distance_global, 1), daemon = True)
+                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (var.maze_map_global, var.distance_global), daemon = True)
                     Maze_thread.start()
                     
-                    open = 0
+                    start = 0
 
                 left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
 
@@ -138,15 +133,15 @@ if __name__ == "__main__":
 
             case 3: #speedrun
 
-                if open:
+                if start:
                     distance = algorythm_functions.read_file('path.txt')
                     maze_map = algorythm_functions.read_file('maze.txt')
 
                     #run in another thread to make it possible to look on it during robot run
-                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (maze_map, distance, 0), daemon = True)
+                    Maze_thread = Thread(target = draw_maze.draw_maze, args = (maze_map, distance), daemon = True)
                     Maze_thread.start()
                     
-                    open = 0
+                    start = 0
 
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
 

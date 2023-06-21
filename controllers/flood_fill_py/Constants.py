@@ -5,8 +5,11 @@ TIME_STEP = 64
 TILE_LENGTH = 0.12 #tile length
 AXLE = 0.0568 #axle length 0.0568
 WHEEL = 0.02002 #wheel radius 0.02002
-SPEED = 6
+SPEED = 4
 
+KEYBOARD = 1
+SEARCH = 2
+SPEEDRUN = 3
 #Walls values according to  direction (NORTH is not always forward etc.)
 WEST =      1    #  00000001 
 SOUTH =     2    #  00000010 
@@ -17,7 +20,7 @@ ROWS =  16
 COLUMNS = 16
 MAZE_SIZE = ROWS * COLUMNS      #16x16
 VISITED = 64
-MODE = 3                       # 1- keyboard, 2- search, 3 - speeedrun
+MODE = 1                       # 1- keyboard, 2- search, 3 - speeedrun
 TESTING = 0  # 1- print sensors values etc. for testing, 0 - no prints
     
 #Sets correct target for used mode
@@ -32,8 +35,11 @@ else:
 Direction = namedtuple("direction", " WEST SOUTH EAST NORTH")
 direction = Direction(WEST, SOUTH, EAST, NORTH)
 
-Robot_parameters = namedtuple('robot_parameters','AXLE WHEEL SPEED MODE')
-robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED, MODE)
+Robot_parameters = namedtuple('robot_parameters','AXLE WHEEL SPEED')
+robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED)
+
+Mode_params = namedtuple('robot_parameters','KEYBOARD SEARCH SPEEDRUN MODE TESTING')
+mode_params = Mode_params(KEYBOARD, SEARCH, SPEEDRUN, MODE, TESTING)
 
 Maze_parameters = namedtuple('maze_parameters',
                               'ROWS COLUMNS MAZE_SIZE VISITED TARGET_CELL TILE_LENGTH')
