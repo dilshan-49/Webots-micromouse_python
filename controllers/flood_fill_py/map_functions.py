@@ -122,6 +122,8 @@ def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
         
         if check:
             maze_map[robot_position] = maze_map[robot_position] | direction.EAST
+        
+    return maze_map
 
 
 ''' init_maze_map

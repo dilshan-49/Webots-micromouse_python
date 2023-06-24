@@ -98,14 +98,16 @@ def update_maze_speedrun(size, lines, robot_position):
     draw_position(size, robot_position)
 
     while var.robot_pos != maze_parameters.TARGET_CELL:
-        with var.con:
-            while not var.pos_update:
-                var.con.wait()
-            
-        var.pos_update = False
+
+        var.drawing_event.wait()
+        var.drawing_event.clear()
+
         last_x, last_y = draw_path(last_x, last_y, size, lines)
         robot_position.clear()
         draw_position(size, robot_position)
+        
+        update()
+        var.main_event.set()
 
 ''' update_maze_search
 # @brief Update maze visualisation with visited cells, discovered walls and distance values.
@@ -119,42 +121,34 @@ def update_maze_search(size, visited_cell, text, maze):
     draw_position(size, visited_cell)
 
     while var.robot_pos != var.target_global:
-        with var.con:
-            while not var.pos_update:
-                var.con.wait()
+
+        var.drawing_event.wait()
+        var.drawing_event.clear()
             
-        var.pos_update = False
 
         draw_position(size, visited_cell)
-        maze.clear()
-        i = 0
-        for y in range(-480, 480, size):
-            for x in range(-480, 480, size):                   
-                if var.maze_map_global[i] < 64:
-                    draw_wall(var.maze_map_global[i], x, y, size, maze)
-                draw_wall(var.maze_map_global[i] - 64, x, y, size, maze)
-                i += 1
-        i = 0
+        #maze.clear()
+
+        xx = var.robot_pos % 16
+        xx = -480 + xx * size 
+        yy = int(var.robot_pos / 16)
+        yy = -480 + yy * size
+        # if var.maze_map_global[var.robot_pos] < 64:
+        #     draw_wall(var.maze_map_global[var.robot_pos], xx, yy, size, maze)
+        # else:
+        draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
+
         if var.distance_update:
+            i = 0
             text.clear()
             for y in range(-480, 480, size):
                 for x in range(-480, 480, size):
                     write_distance(x, y, var.distance_global[i], text)
                     i += 1
             var.distance_update = False
-    
-        # print("pozycja robo")
-        # print (var.robot_pos)
-        # xx = var.robot_pos % 16
-        # xx = -480 + x * size 
-        # yy = int(var.robot_pos / 16)
-        # yy = -480 + y * size
-        # if var.maze_map_global[var.robot_pos] < 64:
-        #     draw_wall(var.maze_map_global[var.robot_pos], xx, yy, size, maze)
-        # else:
-        #     draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
 
         update()
+        var.main_event.set()
         
 ''' line
 # @brief Draw line
@@ -187,7 +181,6 @@ def draw_path(last_x, last_y, size, t):
     t.goto(-450 + last_x * size, -450 + last_y * size) #last position
     t.pendown()
     line(-450 + last_x * size, -450 + last_y * size, -450 + next_x * size, -450 + next_y * size, t)
-    update()
 
     return next_x, next_y
 
@@ -207,7 +200,6 @@ def draw_position(size, t):
     t.begin_fill()
     t.circle(6)
     t.end_fill()
-    update()
 
 
 ''' write_distance

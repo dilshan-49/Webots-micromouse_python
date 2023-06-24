@@ -210,14 +210,14 @@ def change_target(maze_map, robot_position, distance, target):
                 print('target =', target)
 
     if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
-        print('KONIEC!!!!!!!')
+        print('END!!!!!!!')
 
         write_file('path.txt', distance)
         
         #Check that distance was correctly written to file
         distance_temp = read_file('path.txt')
 
-        print('############ KONCOWA TRASA ############')
+        print('############ ENDING PATH ############')
         print_array(distance_temp, 0) 
 
         write_file('maze.txt', maze_map)
@@ -225,7 +225,7 @@ def change_target(maze_map, robot_position, distance, target):
         #Check that maze map was correctly written to file
         maze_map_temp = read_file('maze.txt')
 
-        print('############ KONCOWY LABIRYNT ############')
+        print('############ ENDING MAZE ############')
         print_array(maze_map_temp, 1) 
         #draw_maze.draw_maze(maze_map_temp, distance_temp)
         input("press any key to end")

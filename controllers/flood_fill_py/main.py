@@ -3,6 +3,7 @@
 from controller import Robot, Keyboard
 from collections import namedtuple
 from threading import Thread, Condition
+import time
 #my modules
 from Constants import *
 import map_functions
@@ -11,10 +12,12 @@ import algorythm_functions
 import draw_maze
 import var
 
-if __name__ == "__main__":
 
+
+# if __name__ == "__main__":
+def run_robot(robot):
     # create the Robot instance.
-    robot = Robot()
+    #robot = Robot()
     
     left_motor = robot.getDevice('left wheel motor')
     right_motor = robot.getDevice('right wheel motor')
@@ -30,12 +33,12 @@ if __name__ == "__main__":
     maze_map = [0] * maze_parameters.MAZE_SIZE
     distance = [255] * maze_parameters.MAZE_SIZE
     
-    target = maze_parameters.TARGET_CELL        #robot start target
-    robot_position  = 0                          #robot start position
-    move_direction = direction.NORTH            #where robot wants to move on start
-    mode = mode_params.MODE                # 1- keyboard, 2- search, 3 - speeedrun
-    start = 1                                    #to open file 1 time
-    robot_orientation = direction.NORTH         #robot start orientation
+    target = maze_parameters.TARGET_CELL            # robot start target
+    robot_position  = maze_parameters.START_CELL    # robot start position
+    move_direction = direction.NORTH                # where robot wants to move on start
+    mode = mode_params.MODE                         # 1- keyboard, 2- search, 3 - speeedrun
+    start = 1                                       # to open file 1 time
+    robot_orientation = direction.NORTH             # robot start orientation
     maze_map = map_functions.init_maze_map(maze_map)
     var.maze_map_global = maze_map
     if mode_params.MODE == mode_params.KEYBOARD:
@@ -89,24 +92,36 @@ if __name__ == "__main__":
                 left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
 
                 if left_wall:
-                    map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.WEST)
+                    maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.WEST)
                 
                 if front_wall:
-                    map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.NORTH)
+                    maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.NORTH)
                 
                 if right_wall:
-                    map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.EAST)
+                    maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.EAST)
 
                 if back_wall:
-                    map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.SOUTH)
+                    maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.SOUTH)
 
                 # print('MAZE MAP')
                 # map_functions.print_array(maze_map, 0)
                 # print('MAZE MAP')
 
+
                 distance = map_functions.init_distance_map(distance, target) #reset path
 
                 distance = algorythm_functions.floodfill(maze_map, distance) #path
+
+                var.robot_pos = robot_position
+
+                var.maze_map_global = maze_map
+
+                if var.distance_global != distance:
+                    var.distance_global = distance
+                    var.distance_update = True
+
+                var.target_global = target
+                var.drawing_event.set()
 
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
 
@@ -117,20 +132,12 @@ if __name__ == "__main__":
                 
                 maze_map[robot_position] = maze_map[robot_position] | maze_parameters.VISITED   #mark visited tile
 
-
                 if robot_position == target:
                     target = algorythm_functions.change_target(maze_map, robot_position, distance, target)
                 
-                var.robot_pos = robot_position
-                var.maze_map_global = maze_map
-                if distance != var.distance_global:
-                    var.distance_global = distance
-                    var.distance_update = True
-                var.target_global = target
-                with var.con: #notify maze thread that robot position has changed
-                    var.pos_update = True
-                    var.con.notify()
-
+                var.main_event.wait()
+                var.main_event.clear()
+                
             case 3: #speedrun
 
                 if start:
@@ -151,12 +158,22 @@ if __name__ == "__main__":
                 robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
                 
                 var.robot_pos = robot_position
-                with var.con: #notify maze thread that robot position has changed
-                    var.pos_update = True
-                    var.con.notify()
+
+                var.drawing_event.set()
+                
+                var.main_event.wait()
+                var.main_event.clear()
 
                 if robot_position == target:
                     print('Target reached')
                     input("press any key to end")
                     exit(0)
                     
+if __name__ == "__main__":
+    
+    robot = Robot()
+    
+    run_robot(robot)
+    Robot_thread = Thread(target = run_robot, args = robot, daemon = True)
+    Robot_thread.start()
+
