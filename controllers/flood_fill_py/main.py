@@ -2,8 +2,8 @@
 
 from controller import Robot, Keyboard
 from collections import namedtuple
-from threading import Thread, Condition
-import time
+from threading import Thread
+
 #my modules
 from Constants import *
 import map_functions
@@ -13,12 +13,8 @@ import draw_maze
 import var
 
 
-
-# if __name__ == "__main__":
 def run_robot(robot):
-    # create the Robot instance.
-    #robot = Robot()
-    
+ 
     left_motor = robot.getDevice('left wheel motor')
     right_motor = robot.getDevice('right wheel motor')
 
@@ -59,14 +55,13 @@ def run_robot(robot):
 
     while robot.step(TIME_STEP) != -1:
         if mode_params.TESTING:
-            print('sensor tof {}',tof.getValue()) #do usuniecia
-            #print('sensor ps5 {}',ps[5].getValue()) #do usuniecia
+            print('sensor tof %.2f'% tof.getValue()) #do usuniecia
 
         if mode_params.TESTING:
-            print('sensor ps6 left {}',ps[6].getValue()) #do usuniecia
+            print('sensor ps6 left %.2f'% ps[6].getValue()) #do usuniecia
+        
         if mode_params.TESTING:
-            print('sensor ps1 right {}',ps[1].getValue()) #do usuniecia
-
+            print('sensor ps1 right %.2f'% ps[1].getValue()) #do usuniecia
 
         match mode:
             case 1: #keyboard
@@ -88,6 +83,8 @@ def run_robot(robot):
                     Maze_thread.start()
                     
                     start = 0
+                if mode_params.TESTING:
+                    timer = robot.getTime()
 
                 left_wall, front_wall, right_wall, back_wall, avg5_left_sensor, avg2_right_sensor = map_functions.detect_walls(robot, ps, 5)
 
@@ -122,11 +119,21 @@ def run_robot(robot):
 
                 var.target_global = target
                 var.drawing_event.set()
+                
+                if var.searching_end:
+                    print('Target reached')
+                    print('Searching time: %.2f'% robot.getTime(),'s')
+                    input("press any key to end")
+                    exit(0)
 
                 move_direction = algorythm_functions.where_to_move(maze_map, robot_position, distance, robot_orientation)
 
                 robot_orientation =  move_functions.move(robot_orientation, move_direction,\
                                                         robot, left_motor, right_motor, ps_left, ps_right, ps)
+                
+                if mode_params.TESTING:
+                    timer = robot.getTime() - timer
+                    print('Move time: %.2f'% timer,'s')
 
                 robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
                 
@@ -137,7 +144,7 @@ def run_robot(robot):
                 
                 var.main_event.wait()
                 var.main_event.clear()
-                
+
             case 3: #speedrun
 
                 if start:
@@ -166,6 +173,7 @@ def run_robot(robot):
 
                 if robot_position == target:
                     print('Target reached')
+                    print('Speedrun time: %.2f'% robot.getTime(),'s')
                     input("press any key to end")
                     exit(0)
                     
@@ -174,6 +182,6 @@ if __name__ == "__main__":
     robot = Robot()
     
     run_robot(robot)
+
     Robot_thread = Thread(target = run_robot, args = robot, daemon = True)
     Robot_thread.start()
-

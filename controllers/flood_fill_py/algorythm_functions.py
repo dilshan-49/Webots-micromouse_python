@@ -1,8 +1,8 @@
 #Algorythm related functions
 
 from Constants import *
-from map_functions import print_array
-
+from map_functions import print_array, init_distance_map
+import var
 
 ''' floodfill
 # @brief Floodfill algorythm which calculates shortest path to actual target based on actual maze map.
@@ -189,47 +189,61 @@ def change_position(robot_position, robot_orientation):
 '''
 def change_target(maze_map, robot_position, distance, target):
     
-    search = True
-    i = 0
-
-    while search: #search to find unvisited cell, otherwise end
-        
-        if not(maze_map[i] & maze_parameters.VISITED):
+    match mode_params.WHOLE_SEARCH:
+        case False:
+            if robot_position == 136:
+                target = 0
+            elif robot_position == 0:
+                var.searching_end = True
+                target = 136
+        case True:
+            search = True
+            i = 0
+            while search: #search to find unvisited cell, otherwise end
             
-            target = i
-            search = False
-            if mode_params.TESTING:
-                print('target =', target)
-        else:
-            i += 1
+                if not(maze_map[i] & maze_parameters.VISITED):
+                    
+                    target = i
+                    search = False
+                    if mode_params.TESTING:
+                        print('target =', target)
+                else:
+                    i += 1
+                
+                if i == 256:
+                    target = 136
+                    search = False
+                    var.searching_end = True
+                    if mode_params.TESTING:
+                        print('target =', target)
+
+    # if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
+    if var.searching_end:
+    
+        distance = init_distance_map(distance, target) #reset path
+        distance = floodfill(maze_map, distance) #path
         
-        if i == 256:
-            target = 136
-            search = False
-            if mode_params.TESTING:
-                print('target =', target)
-
-    if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
-        print('END!!!!!!!')
-
         write_file('path.txt', distance)
         
         #Check that distance was correctly written to file
         distance_temp = read_file('path.txt')
-
-        print('############ ENDING PATH ############')
-        print_array(distance_temp, 0) 
+        
+        if mode_params.TESTING:
+            print('############ ENDING PATH ############')
+            print_array(distance_temp, 0) 
 
         write_file('maze.txt', maze_map)
     
         #Check that maze map was correctly written to file
         maze_map_temp = read_file('maze.txt')
-
-        print('############ ENDING MAZE ############')
-        print_array(maze_map_temp, 1) 
+        
+        if mode_params.TESTING:
+            print('############ ENDING MAZE ############')
+            print_array(maze_map_temp, 1) 
+        # var.searching_end = True
         #draw_maze.draw_maze(maze_map_temp, distance_temp)
-        input("press any key to end")
-        exit(0)
+        # input("press any key to end")
+        # exit(0)
             
     return target
 

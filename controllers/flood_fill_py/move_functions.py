@@ -152,7 +152,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
             error = left_angle_sensor - right_angle_sensor
             
             if mode_params.TESTING:
-                print('error {}',error)
+                print('error %.3f'% error)
 
             error_integral += error
             error_derivative = (previous_error - error)
@@ -164,7 +164,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
                 MotorSpeed = -0.2
             
             if mode_params.TESTING:
-                print('speed {}',MotorSpeed)
+                print('speed %.3f'% MotorSpeed)
 
             left_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
             right_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
@@ -172,7 +172,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
             error = left_angle_sensor - Middle
             
             if mode_params.TESTING:
-                print('errorL {}',error)
+                print('errorL %.3f'% error)
                 
             error_integral += error
             error_derivative = (previous_error - error)
@@ -184,7 +184,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
                 MotorSpeed = -0.06
             
             if mode_params.TESTING:
-                print('speed {}',MotorSpeed)
+                print('speed %.3f'% MotorSpeed)
 
             left_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
             right_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
@@ -192,7 +192,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
             error = right_angle_sensor - Middle
             
             if mode_params.TESTING:
-                print('errorR {}',error)
+                print('errorR %.3f'% error)
 
             error_integral += error
             error_derivative = (previous_error - error)
@@ -204,7 +204,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
                 MotorSpeed = -0.06
             
             if mode_params.TESTING:
-                print('speed {}',MotorSpeed)
+                print('speed %.3f'% MotorSpeed)
 
             left_motor.setVelocity(robot_parameters.SPEED - MotorSpeed)
             right_motor.setVelocity(robot_parameters.SPEED + MotorSpeed)
