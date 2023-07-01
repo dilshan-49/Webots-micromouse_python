@@ -143,8 +143,8 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
         previous_error = 0.00
         error_integral = 0.00
         P = 0.005  #0.005
-        I = 0.0005 #0.0005
-        D = 0.0002 # 0.0
+        I = 0.0 #0.0005
+        D = 0.0005 # 0.0002
         Middle = 75
         
         if left_wall and right_wall:
@@ -249,6 +249,55 @@ def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps):
 
     #wait_move_end(robot, ps_left, ps_right)
 
+def move_front_correct(tof, left_motor, right_motor, robot, ps):
+
+    left_motor.setPosition(float('inf'))
+    right_motor.setPosition(float('inf'))
+
+    left = ps[7].getValue()
+    right = ps[0].getValue()
+
+    if left < right:
+        while left < right:
+            left_motor.setVelocity(robot_parameters.SPEED * 0.1)
+            right_motor.setVelocity(robot_parameters.SPEED * -0.1)
+            robot.step(TIME_STEP)
+            left = ps[7].getValue()
+            right = ps[0].getValue()
+            if mode_params.TESTING:
+                print('sensor angle %.2f'% left, '%.2f'% right)
+    elif left > right:
+        while left > right:
+            left_motor.setVelocity(robot_parameters.SPEED * -0.1)
+            right_motor.setVelocity(robot_parameters.SPEED * 0.1)
+            robot.step(TIME_STEP)
+            left = ps[7].getValue()
+            right = ps[0].getValue()
+            if mode_params.TESTING:
+                print('sensor angle %.2f'% left, '%.2f'% right)
+
+    front = tof.getValue()
+    if front > 40.0:
+        while front > 40.0:
+
+            left_motor.setVelocity(robot_parameters.SPEED * 0.1)
+            right_motor.setVelocity(robot_parameters.SPEED * 0.1)
+            robot.step(TIME_STEP)
+            front = tof.getValue()
+            if mode_params.TESTING:
+                print('sensor tof %.2f'% front)
+    elif front < 40:
+        while front < 40:
+            left_motor.setVelocity(robot_parameters.SPEED * -0.1)
+            right_motor.setVelocity(robot_parameters.SPEED * -0.1)
+            robot.step(TIME_STEP)
+            front = tof.getValue()
+            if mode_params.TESTING:
+                print('sensor tof %.2f'% front)
+
+    left_motor.setVelocity(0)
+    right_motor.setVelocity(0)
+
 
 ''' turn
 # @brief Makes robot turn left, right or backward.
@@ -301,6 +350,8 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
 
     wait_move_end(robot, ps_left, ps_right)
 
+def turn_gyro(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
+    print(1)
 
 ''' wait_move_end
 # @brief Stops main loop execution until robot ends move.

@@ -137,7 +137,8 @@ def update_maze_search(size, visited_cell, text, maze):
         #     draw_wall(var.maze_map_global[var.robot_pos], xx, yy, size, maze)
         # else:
         draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
-
+        if var.robot_pos == 136:
+            draw_center(size, maze)
         if var.distance_update:
             i = 0
             text.clear()
@@ -149,7 +150,27 @@ def update_maze_search(size, visited_cell, text, maze):
 
         update()
         var.main_event.set()
-        
+
+
+def draw_center(size, maze):
+        center = [119, 120, 135]
+        for center_cell in center:
+            if (var.maze_map_global[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED:
+                xx = center_cell % 16
+                xx = -480 + xx * size 
+                yy = int(center_cell / 16)
+                yy = -480 + yy * size
+                match center_cell:
+                    case 119:
+                        draw_wall(3, xx, yy, size, maze)
+                    case 120:
+                        draw_wall(6, xx, yy, size, maze)
+                    case 135:
+                        draw_wall(9, xx, yy, size, maze)
+
+
+
+
 ''' line
 # @brief Draw line
 # @param start_x: variable with line beginning x coordinate

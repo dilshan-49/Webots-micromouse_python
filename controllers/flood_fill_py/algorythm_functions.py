@@ -3,6 +3,47 @@
 from Constants import *
 from map_functions import print_array, init_distance_map
 import var
+import heapq
+
+# def dijkstra(maze_map, start, target):
+#     distances = {}  # Dictionary to store the shortest distances
+#     prev = {}  # Dictionary to store the previous node in the shortest path
+#     heap = []  # Min-heap to prioritize cells with shorter distances
+
+#     distances[start] = 0
+#     heapq.heappush(heap, (distances[start], start))
+
+#     while heap:
+#         curr_dist, curr_node = heapq.heappop(heap)
+
+#         if curr_node == target:
+#             break
+
+#         if curr_dist > distances[curr_node]:
+#             continue
+
+#         for neighbor in get_neighbors(curr_node):
+#             new_dist = curr_dist + 1  # Assuming each movement has a cost of 1
+
+#             if neighbor not in distances or new_dist < distances[neighbor]:
+#                 distances[neighbor] = new_dist
+#                 prev[neighbor] = curr_node
+#                 heapq.heappush(heap, (new_dist, neighbor))
+
+#     if target not in prev:
+#         return None  # No path found
+
+#     # Reconstruct the shortest path
+#     path = []
+#     curr = target
+#     while curr != start:
+#         path.append(curr)
+#         curr = prev[curr]
+#     path.append(start)
+#     path.reverse()
+
+#     return path 
+
 
 ''' floodfill
 # @brief Floodfill algorythm which calculates shortest path to actual target based on actual maze map.
@@ -192,8 +233,28 @@ def change_target(maze_map, robot_position, distance, target):
     match mode_params.WHOLE_SEARCH:
         case False:
             if robot_position == 136:
-                target = 0
+
+                mark_center(maze_map)
+
+                distance = init_distance_map(distance, target) #reset path
+                distance = floodfill(maze_map, distance) #path
+                
+                #fill unvisited cells with 4 walls to verify if the shortest path was find
+                distance_check = check_distance(distance, maze_map, target)
+
+                if distance_check == True:
+                    print("To jest najkrotsza/jedna z najkrotszych tras")
+                    var.searching_end = True
+                else:
+                    print("Moze byc krotsza trasa, lecimy dalej")
+                    target = 0
+
             elif robot_position == 0:
+                distance_check = check_distance(distance, maze_map, target)
+                if distance_check == True:
+                    print("To jest najkrotsza/jedna z najkrotszych tras")
+                else:
+                    print("Moze byc krotsza trasa")
                 var.searching_end = True
                 target = 136
         case True:
@@ -246,6 +307,39 @@ def change_target(maze_map, robot_position, distance, target):
         # exit(0)
             
     return target
+
+
+def mark_center(maze_map):
+        center = [119, 120, 135]
+        for center_cell in center:
+            if (maze_map[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED:
+                match center_cell:
+                    case 119:
+                        maze_map[center_cell] = 3 #+ maze_parameters.VISITED
+                        maze_map[center_cell - 1] |= direction.EAST
+                        maze_map[center_cell - 16] |= direction.NORTH
+                    case 120:
+                        maze_map[center_cell] = 6 #+ maze_parameters.VISITED
+                        maze_map[center_cell + 1] |= direction.WEST
+                        maze_map[center_cell - 16] |= direction.NORTH
+                    case 135:
+                        maze_map[center_cell] = 9 #+ maze_parameters.VISITED
+                        maze_map[center_cell - 1] |= direction.EAST
+                        maze_map[center_cell + 16] |= direction.SOUTH
+
+def check_distance(distance, maze_map, target):
+    distance_check = distance.copy()
+    maze_map_check = maze_map.copy()
+    for i in range(0, maze_parameters.MAZE_SIZE):
+        if (maze_map_check[i] & maze_parameters.VISITED) != maze_parameters.VISITED:
+            maze_map_check[i] = maze_map_check[i] | 15 | maze_parameters.VISITED
+    
+    distance_check = init_distance_map(distance_check, target) #reset path
+    distance_check = floodfill(maze_map_check, distance_check) #path
+    check = distance[0] >= distance_check[0]
+
+    return check
+
 
 ''' read_file
 # @brief Read file

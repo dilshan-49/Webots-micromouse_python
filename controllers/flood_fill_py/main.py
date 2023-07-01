@@ -54,6 +54,7 @@ def run_robot(robot):
     tof.enable(TIME_STEP)
 
     while robot.step(TIME_STEP) != -1:
+        
         if mode_params.TESTING:
             print('sensor tof %.2f'% tof.getValue()) #do usuniecia
 
@@ -93,7 +94,8 @@ def run_robot(robot):
                 
                 if front_wall:
                     maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.NORTH)
-                
+                    move_functions.move_front_correct(tof, left_motor, right_motor, robot, ps)
+
                 if right_wall:
                     maze_map = map_functions.add_wall(maze_map, robot_position, robot_orientation, direction.EAST)
 
@@ -137,7 +139,7 @@ def run_robot(robot):
 
                 robot_position = algorythm_functions.change_position(robot_position, robot_orientation)
                 
-                maze_map[robot_position] = maze_map[robot_position] | maze_parameters.VISITED   #mark visited tile
+                maze_map[robot_position] = maze_map[robot_position] | maze_parameters.VISITED  #mark visited tile
 
                 if robot_position == target:
                     target = algorythm_functions.change_target(maze_map, robot_position, distance, target)
@@ -176,7 +178,7 @@ def run_robot(robot):
                     print('Speedrun time: %.2f'% robot.getTime(),'s')
                     input("press any key to end")
                     exit(0)
-                    
+                
 if __name__ == "__main__":
     
     robot = Robot()
