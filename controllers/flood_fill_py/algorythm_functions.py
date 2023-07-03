@@ -3,7 +3,6 @@
 from Constants import *
 from map_functions import print_array, init_distance_map
 import var
-import heapq
 
 # def dijkstra(maze_map, start, target):
 #     distances = {}  # Dictionary to store the shortest distances

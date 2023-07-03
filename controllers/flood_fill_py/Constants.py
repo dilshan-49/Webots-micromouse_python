@@ -1,8 +1,9 @@
 from collections import namedtuple
 
 # Values to change to run program in different modes etc.
-MODE = 2                       # 1- keyboard, 2- search, 3 - speeedrun
-TESTING = 1  # 1- print sensors values etc. for testing, 0 - no prints
+MODE = 2                       # 2- search, 3 - speeedrun
+ALGORITHM = 3           # 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS)
+TESTING = 0  # 1- print sensors values etc. for testing, 0 - no prints
 
 # True - discover whole maze (guaranteed shortest path, but long searching time),
 # False - make 2 runs: start -> target and target -> start (shorter searching time, but shortest path not guaranteed)
@@ -50,8 +51,8 @@ direction = Direction(WEST, SOUTH, EAST, NORTH)
 Robot_parameters = namedtuple('robot_parameters','AXLE WHEEL SPEED')
 robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED)
 
-Mode_params = namedtuple('robot_parameters','KEYBOARD SEARCH SPEEDRUN MODE TESTING WHOLE_SEARCH')
-mode_params = Mode_params(KEYBOARD, SEARCH, SPEEDRUN, MODE, TESTING, WHOLE_SEARCH)
+Mode_params = namedtuple('robot_parameters','KEYBOARD SEARCH SPEEDRUN MODE TESTING WHOLE_SEARCH ALGORITHM')
+mode_params = Mode_params(KEYBOARD, SEARCH, SPEEDRUN, MODE, TESTING, WHOLE_SEARCH, ALGORITHM)
 
 Maze_parameters = namedtuple('maze_parameters',
                               'ROWS COLUMNS MAZE_SIZE VISITED TARGET_CELL TILE_LENGTH START_CELL')

@@ -125,7 +125,6 @@ def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
         
     return maze_map
 
-
 ''' init_maze_map
 # @brief Initialize maze map with external walls.
 #
