@@ -53,9 +53,9 @@ def init_maze_map_graph():
 
         z = (cell % rows) == 14
         
-        if z:
+        if z: # next row
             cell += 3
-        else:
+        else: # next column
             cell += 1
 
     return maze_map
@@ -76,7 +76,7 @@ def init_maze_map_graph():
 def add_walls_graph(maze_map, robot_position, robot_orientation, detected_wall):
     walls = []
     rows = maze_parameters.ROWS
-    #shift wall value
+    
     for i in detected_wall.keys():
         if not detected_wall[i]:
             match i:
@@ -121,7 +121,7 @@ def add_walls_graph(maze_map, robot_position, robot_orientation, detected_wall):
 
     return maze_map
 
-''' where_to_move TODO
+''' where_to_move TODO works only for 16x16 maze
 # @brief Decide where to move by checking distance values in neighbors cells.
 # Depending on robot orientation, value in variable wall 
 # is changed so it match global directions. Then wall is added
@@ -134,10 +134,8 @@ def add_walls_graph(maze_map, robot_position, robot_orientation, detected_wall):
 #
 # @retval move_direction: variable with move direction to do
 '''
-def where_to_move_graph(maze_map, robot_position, current_destination, robot_orientation):
+def where_to_move_graph(robot_position, current_destination):
 
-    rows = maze_parameters.ROWS
-    move_direction = direction.NORTH
     x = current_destination - robot_position
     match x:
         case -16:
@@ -146,7 +144,7 @@ def where_to_move_graph(maze_map, robot_position, current_destination, robot_ori
             move_direction = direction.WEST
         case 1:
             move_direction = direction.EAST
-        case rows:
+        case 16:
             move_direction = direction.NORTH
 
     return move_direction
@@ -156,7 +154,7 @@ def move_back(destination, maze_map, robot_position, intersection, intersection_
                robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path):
     while destination not in maze_map[robot_position]:
         for cell in reversed(intersection[intersection_number]):
-            move_direction = where_to_move_graph(maze_map, robot_position, cell, robot_orientation)
+            move_direction = where_to_move_graph(robot_position, cell)
             _, front_wall, _, _, _, _ = map_functions.detect_walls(robot, ps, 5)
             if front_wall:
                 move_functions.move_front_correct(tof, left_motor, right_motor, robot, ps)
@@ -170,7 +168,5 @@ def move_back(destination, maze_map, robot_position, intersection, intersection_
         intersection_count[intersection_number] -= 1
         if intersection_count[intersection_number] == 0:
                 intersection_number -= 1
-                # intersection[intersection_number].append(robot_position)
-
 
     return intersection, intersection_number,intersection_count, path, robot_orientation, robot_position

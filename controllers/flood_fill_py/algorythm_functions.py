@@ -1,47 +1,9 @@
 #Algorythm related functions
+import pickle
 
 from Constants import *
 from map_functions import print_array, init_distance_map
 import var
-
-# def dijkstra(maze_map, start, target):
-#     distances = {}  # Dictionary to store the shortest distances
-#     prev = {}  # Dictionary to store the previous node in the shortest path
-#     heap = []  # Min-heap to prioritize cells with shorter distances
-
-#     distances[start] = 0
-#     heapq.heappush(heap, (distances[start], start))
-
-#     while heap:
-#         curr_dist, curr_node = heapq.heappop(heap)
-
-#         if curr_node == target:
-#             break
-
-#         if curr_dist > distances[curr_node]:
-#             continue
-
-#         for neighbor in get_neighbors(curr_node):
-#             new_dist = curr_dist + 1  # Assuming each movement has a cost of 1
-
-#             if neighbor not in distances or new_dist < distances[neighbor]:
-#                 distances[neighbor] = new_dist
-#                 prev[neighbor] = curr_node
-#                 heapq.heappush(heap, (new_dist, neighbor))
-
-#     if target not in prev:
-#         return None  # No path found
-
-#     # Reconstruct the shortest path
-#     path = []
-#     curr = target
-#     while curr != start:
-#         path.append(curr)
-#         curr = prev[curr]
-#     path.append(start)
-#     path.reverse()
-
-#     return path 
 
 
 ''' floodfill
@@ -277,33 +239,28 @@ def change_target(maze_map, robot_position, distance, target):
                     if mode_params.TESTING:
                         print('target =', target)
 
-    # if (robot_position == target) and (search == False) and (target == 136): #after reaching final target, save result in file
     if var.searching_end:
     
         distance = init_distance_map(distance, target) #reset path
         distance = floodfill(maze_map, distance) #path
         
-        write_file('path.txt', distance)
+        write_file('Results/floodfill_path.pkl', distance)
         
         #Check that distance was correctly written to file
-        distance_temp = read_file('path.txt')
+        distance_temp = read_file('floodfill_path.pkl')
         
         if mode_params.TESTING:
             print('############ ENDING PATH ############')
             print_array(distance_temp, 0) 
 
-        write_file('maze.txt', maze_map)
+        write_file('floodfill_maze.pkl', maze_map)
     
         #Check that maze map was correctly written to file
-        maze_map_temp = read_file('maze.txt')
+        maze_map_temp = read_file('floodfill_maze.pkl')
         
         if mode_params.TESTING:
             print('############ ENDING MAZE ############')
             print_array(maze_map_temp, 1) 
-        # var.searching_end = True
-        #draw_maze.draw_maze(maze_map_temp, distance_temp)
-        # input("press any key to end")
-        # exit(0)
             
     return target
 
@@ -325,6 +282,7 @@ def mark_center(maze_map):
                         maze_map[center_cell] = 9 #+ maze_parameters.VISITED
                         maze_map[center_cell - 1] |= direction.EAST
                         maze_map[center_cell + 16] |= direction.SOUTH
+
 
 def check_distance(distance, maze_map, target):
     distance_check = distance.copy()
@@ -349,17 +307,16 @@ def check_distance(distance, maze_map, target):
 '''
 def read_file(file_name):
         
-        file = open(file_name,'r')
-        if file == None:
-            print('ERROR')
-            exit(1)
-        
-        list_temp = []
-        for field in file:
-            list_temp.append(int(field))
-        file.close()
-        
-        return list_temp
+    # file = open(file_name,'r')
+    with open(file_name, "rb") as file:
+        readed = pickle.load(file)
+    
+    if file == None:
+        print('ERROR')
+        exit(1)
+
+    return readed
+
 
 ''' write_file
 # @brief Write file
@@ -368,18 +325,14 @@ def read_file(file_name):
 # @param: list: list with a content to write file
 # @retval None
 '''
-def write_file(file_name, list):
+def write_file(file_name, values):
         
-        file = open(file_name,'w')
-        
+        # file = open(file_name,'w')
+        with open(file_name, "wb") as file:
+            pickle.dump(values, file)
         if file == None:
             print('ERROR')
             exit(1)
-        
-        for field in list:
-            file.write('%i\n' % field)
-        
-        file.close()
 
         
 

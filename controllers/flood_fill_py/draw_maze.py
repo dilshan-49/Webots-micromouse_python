@@ -28,7 +28,6 @@ def init_maze(maze_map, distance, size):
     text.hideturtle()
     text.width(1)
 
-
     #draw grid
     for y in range(-480, 480, size):
         for x in range(-480, 480, size):
@@ -40,14 +39,21 @@ def init_maze(maze_map, distance, size):
     maze.width(5)
     #draw walls
     i = 0
-    for y in range(-480, 480, size):
-        for x in range(-480, 480, size):
-            write_distance(x, y, distance[i], text)
-            if maze_map[i] < 64: #unvisited cell
-                draw_wall(maze_map[i], x, y, size, maze)
-            
-            draw_wall(maze_map[i] - 64, x, y, size, maze)
-            i += 1
+    if mode_params.ALGORITHM == 2:
+        for y in range(-480, 480, size):
+            for x in range(-480, 480, size):
+                write_distance(x, y, distance[i], text)
+                if maze_map[i] < 64: #unvisited cell
+                    draw_wall(maze_map[i], x, y, size, maze)
+                else:
+                    draw_wall(maze_map[i] - 64, x, y, size, maze)
+                i += 1
+    else: #graph
+        for y in range(-480, 480, size):
+            for x in range(-480, 480, size):
+                cell = graph_walls_convert(maze_map[i], i)
+                draw_wall(cell, x, y, size, maze)
+                i += 1
 
     return text, maze
 
@@ -127,26 +133,28 @@ def update_maze_search(size, visited_cell, text, maze):
             
 
         draw_position(size, visited_cell)
-        #maze.clear()
 
         xx = var.robot_pos % 16
         xx = -480 + xx * size 
         yy = int(var.robot_pos / 16)
         yy = -480 + yy * size
-        # if var.maze_map_global[var.robot_pos] < 64:
-        #     draw_wall(var.maze_map_global[var.robot_pos], xx, yy, size, maze)
-        # else:
-        draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
+
+        if mode_params.ALGORITHM == 2: #floodfill
+            draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
+            if var.distance_update:
+                i = 0
+                text.clear()
+                for y in range(-480, 480, size):
+                    for x in range(-480, 480, size):
+                        write_distance(x, y, var.distance_global[i], text)
+                        i += 1
+                var.distance_update = False
+        else: #graphs
+            cell = graph_walls_convert(var.maze_map_global[var.robot_pos], var.robot_pos)
+            draw_wall(cell, xx, yy, size, maze)
+        
         if var.robot_pos == 136:
             draw_center(size, maze)
-        if var.distance_update:
-            i = 0
-            text.clear()
-            for y in range(-480, 480, size):
-                for x in range(-480, 480, size):
-                    write_distance(x, y, var.distance_global[i], text)
-                    i += 1
-            var.distance_update = False
 
         update()
         var.main_event.set()
@@ -155,7 +163,11 @@ def update_maze_search(size, visited_cell, text, maze):
 def draw_center(size, maze):
         center = [119, 120, 135]
         for center_cell in center:
-            if (var.maze_map_global[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED:
+            if mode_params.ALGORITHM == 2:
+                check = (var.maze_map_global[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED
+            else: #graphs
+                check = len(var.maze_map_global[center_cell]) == 4 #inside unvisited nodes have 4 edges
+            if check:
                 xx = center_cell % 16
                 xx = -480 + xx * size 
                 yy = int(center_cell / 16)
@@ -299,3 +311,25 @@ def draw_wall(maze_map, x, y, size, t):
             line(x, y, x, y + size, t)
             print('WTF POLE %i' % maze_map )
 
+''' graph_walls_convert 
+# @brief Convert edges in node to value which represents walls configuration.
+# Made for compatibility with visualisation.
+#
+# @retval cell_value: variable with value which represents walls configuration.
+'''
+def graph_walls_convert(maze_field, position): #list, value
+    cell_value = 15
+    #list
+    for walls in maze_field:
+        x = position - walls
+        match x:
+            case -16:
+                cell_value -= direction.NORTH
+            case -1:
+                cell_value -= direction.EAST
+            case 1:
+                cell_value -= direction.WEST
+            case 16:
+                cell_value -= direction.SOUTH
+
+    return cell_value
