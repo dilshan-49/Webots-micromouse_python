@@ -166,7 +166,7 @@ def draw_center(size, maze):
             if mode_params.ALGORITHM == 2:
                 check = (var.maze_map_global[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED
             else: #graphs
-                check = len(var.maze_map_global[center_cell]) == 4 #inside unvisited nodes have 4 edges
+                check = len(var.maze_map_global[center_cell]) == 0 #inside unvisited nodes have 4 edges
             if check:
                 xx = center_cell % 16
                 xx = -480 + xx * size 
@@ -319,7 +319,11 @@ def draw_wall(maze_map, x, y, size, t):
 '''
 def graph_walls_convert(maze_field, position): #list, value
     cell_value = 15
-    #list
+
+    if not maze_field:# not visited
+        cell_value = 0
+        return cell_value
+    
     for walls in maze_field:
         x = position - walls
         match x:

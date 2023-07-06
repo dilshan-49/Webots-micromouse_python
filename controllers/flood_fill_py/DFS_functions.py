@@ -9,7 +9,7 @@ import move_functions
 import algorythm_functions
 import draw_maze
 import var
-
+import BFS_functions
 ''' init_maze_map_graph
 # @brief Initialize maze map with external walls as graph.
 # #params None
@@ -57,6 +57,15 @@ def init_maze_map_graph():
             cell += 3
         else: # next column
             cell += 1
+
+    return maze_map
+
+
+def init_maze_map_graph2():
+    maze_map = {}
+    maze = []
+    for i in range(0, maze_parameters.MAZE_SIZE):
+        maze_map[i] = []
 
     return maze_map
 
@@ -154,14 +163,10 @@ def move_back(destination, maze_map, robot_position, intersection, intersection_
                robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path):
     while destination not in maze_map[robot_position]:
         for cell in reversed(intersection[intersection_number]):
-            move_direction = where_to_move_graph(robot_position, cell)
-            _, front_wall, _, _, _, _ = map_functions.detect_walls(robot, ps, 5)
-            if front_wall:
-                move_functions.move_front_correct(tof, left_motor, right_motor, robot, ps)
+            
+            robot_position, robot_orientation = BFS_functions.move_one_position(cell, robot_position, robot_orientation, robot,\
+                                                                ps, tof, left_motor, right_motor, ps_left, ps_right) 
 
-            robot_orientation =  move_functions.move(robot_orientation, move_direction,\
-                                                    robot, left_motor, right_motor, ps_left, ps_right, ps) #git
-            robot_position = cell
             intersection[intersection_number].pop()
             path.pop()
 

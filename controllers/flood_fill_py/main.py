@@ -15,6 +15,9 @@ def run_robot(robot):
             main_functions.floodfill_main(robot)
         case 3:
             main_functions.DFS_main(robot)
+        case 4:
+            main_functions.BFS_main(robot)
+            
 
 if __name__ == "__main__":
     
