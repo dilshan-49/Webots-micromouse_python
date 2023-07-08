@@ -1,22 +1,76 @@
 #Move related functions
+
+from math import pi
+
 from Constants import *
-from math import pi, fabs
-from algorythm_functions import change_orientation
+from algorithm_functions import change_orientation
+import algorithm_functions as algorithm_f
+import map_functions as map_f
+
+
+''' move_one_position_graph
+# @brief Executes robot movement to next position.
+#
+# @param current_destination: variable with cell to which robot moves
+# @param robot_position: variable with current robot position
+# @param robot_orientation: variable with current robot orientation in global directions
+# @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
+#
+# @retval robot_position: variable with updated robot position
+# @retval robot_orientation: variable with updated robot orientation in global directions
+'''
+def move_one_position_graph(current_destination, robot_position, robot_orientation, robot, ps, tof, left_motor, right_motor, ps_left, ps_right):
+    
+    move_direction = algorithm_f.where_to_move_graph(robot_position, current_destination)
+    
+    _, front_wall, _, _ = map_f.detect_walls(robot, ps, tof, 5)
+    if front_wall:
+        move_front_correct(tof, left_motor, right_motor, robot, ps)
+    
+    robot_orientation =  move(robot_orientation, move_direction,\
+                                            robot, left_motor, right_motor, ps_left, ps_right, ps) #git
+
+    robot_position = current_destination
+    
+    return robot_position, robot_orientation
+
+
+''' move_one_position
+# @brief Executes robot movement to next position.
+#
+# @param walls: variable with walls in current robot position
+# @param robot_position: variable with current robot position
+# @param robot_orientation: variable with current robot orientation in global directions
+# @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
+#
+# @retval robot_position: variable with updated robot position
+# @retval robot_orientation: variable with updated robot orientation in global directions
+'''
+def move_one_position(walls, distance, robot_position, robot_orientation, robot, ps, tof, left_motor, right_motor, ps_left, ps_right):
+    
+    move_direction = algorithm_f.where_to_move(walls, robot_position, distance, robot_orientation)
+    
+    _, front_wall, _, _ = map_f.detect_walls(robot, ps, tof, 5)
+    
+    if front_wall:
+        move_front_correct(tof, left_motor, right_motor, robot, ps)
+    
+    robot_orientation =  move(robot_orientation, move_direction,\
+                                            robot, left_motor, right_motor, ps_left, ps_right, ps) #git
+    
+    robot_position = algorithm_f.change_position(robot_position, robot_orientation)
+    
+    return robot_position, robot_orientation
 
 
 ''' move
-# @brief Execute robot move based on its orientation and move direction.
+# @brief Drive robot motors etc. to actually move based on its orientation and move direction.
 #
 # @param robot_orientation: variable with actual robot orientation in global directions
 # @param move_direction: variable direction where to move in global directions
-# @param robot: object with robot instance
-# @param left_motor: object with left motor instance
-# @param right_motor: object with right motor instance
-# @param ps_left: object with left position sensor instance
-# @param ps_right: object with right position sensor instance
-# @param ps: list of distance sensors objects
-#
-# @retv robot_orientation: variable with updated robot orientation in global directions
+# @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
+
+# @retval robot_orientation: variable with updated robot orientation in global directions
 '''
 def move(robot_orientation, move_direction,\
             robot, left_motor, right_motor, ps_left, ps_right, ps):
@@ -47,40 +101,10 @@ def move(robot_orientation, move_direction,\
     return robot_orientation
 
 
-''' speed_correction #replaced by PID_correction
-# @brief Correct robot position according to distance sensors by changing motors speed.
-# O
-# @param left_wall: value which indicates existance of left wall in this field
-# @param right_wall: value which indicates existance of right wall in this field
-# @param left_motor: object with left motor instance
-# @param right_motor: object with right motor instance
-#
-# @retv None
-'''
-def speed_correction(left_wall, right_wall, left_motor, right_motor):
-    if fabs(left_wall - right_wall) > 20:
-
-        if left_wall > right_wall:
-            right_motor.setVelocity(robot_parameters.SPEED * 0.96)
-            left_motor.setVelocity(robot_parameters.SPEED)
-        else:
-            right_motor.setVelocity(robot_parameters.SPEED)
-            left_motor.setVelocity(robot_parameters.SPEED * 0.96)
-    elif fabs(left_wall - right_wall) > 10:
-        
-        if left_wall > right_wall:
-            right_motor.setVelocity(robot_parameters.SPEED * 0.98)
-            left_motor.setVelocity(robot_parameters.SPEED)
-        else:
-            right_motor.setVelocity(robot_parameters.SPEED)
-            left_motor.setVelocity(robot_parameters.SPEED * 0.98)
-
-
 ''' read_sensors
-# @brief Read and process left and right sensors for a pid.
+# @brief Read and process left and right sensors for a PID controller.
 #
-# @param robot: object with robot instance
-# @param ps: list of distance sensors objects
+# @params robot, ps: variables with robot devices
 # @param number_of_reads: variable which indicates how many times to read sensors
 #
 # @retval avg1_right_angle_sensor: variable with right angle sensor value
@@ -120,15 +144,11 @@ def read_sensors(robot, ps, number_of_reads):
 
     return avg1_right_angle_sensor, avg6_left_angle_sensor, left_wall, right_wall
 
+
 ''' PID_correction
 # @brief Correct robot position according to distance sensors by changing motors speed.
 #
-# @param left_motor: object with left motor instance
-# @param right_motor: object with right motor instance
-# @param robot: object with robot instance
-# @param ps: list of distance sensors objects
-# @param ps_left: object with left position sensor instance
-# @param ps_right: object with right position sensor instance
+# @params left_motor, right_motor, robot, ps, ps_left, ps_right: variables with robot devices
 #
 # @retv None
 '''
@@ -217,14 +237,11 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
 
     
 ''' move_1_tile
-# @brief Makes robot move forward to next maze cell.
+# @brief Drive robot motors and set encoders position to move forward by distance
+# to move forward by distance of exactly one tile.
 #
-# @param robot: object with robot instance
-# @param left_motor: object with left motor instance
-# @param right_motor: object with right motor instance
-# @param ps_left: object with left position sensor instance
-# @param ps_right: object with right position sensor instance
-# @param ps: list of distance sensors objects
+# @params robot, left_motor, right_motor, ps_left, ps_right, ps: variables with robot devices
+#
 # @retv None
 '''
 def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps):
@@ -249,6 +266,16 @@ def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps):
 
     #wait_move_end(robot, ps_left, ps_right)
 
+
+''' move_front_correct
+# @brief Corrects robot position in reference to front wall.
+# Uses front angles IR sensors to straight up robot
+# and front tof sensors to correct distance.
+#
+# @params robot, left_motor, right_motor, tof, ps: variables with robot devices
+#
+# @retv None
+'''
 def move_front_correct(tof, left_motor, right_motor, robot, ps):
 
     left_motor.setPosition(float('inf'))
@@ -257,8 +284,11 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
     left = ps[7].getValue()
     right = ps[0].getValue()
 
+    desired_distance = 40.0
+
     if left < right:
         while left < right:
+
             left_motor.setVelocity(robot_parameters.SPEED * 0.1)
             right_motor.setVelocity(robot_parameters.SPEED * -0.1)
             robot.step(TIME_STEP)
@@ -266,8 +296,10 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
             right = ps[0].getValue()
             if mode_params.TESTING:
                 print('sensor angle %.2f'% left, '%.2f'% right)
+
     elif left > right:
         while left > right:
+
             left_motor.setVelocity(robot_parameters.SPEED * -0.1)
             right_motor.setVelocity(robot_parameters.SPEED * 0.1)
             robot.step(TIME_STEP)
@@ -277,8 +309,9 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
                 print('sensor angle %.2f'% left, '%.2f'% right)
 
     front = tof.getValue()
-    if front > 40.0:
-        while front > 40.0:
+    
+    if front > desired_distance:
+        while front > desired_distance:
 
             left_motor.setVelocity(robot_parameters.SPEED * 0.1)
             right_motor.setVelocity(robot_parameters.SPEED * 0.1)
@@ -286,8 +319,10 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
             front = tof.getValue()
             if mode_params.TESTING:
                 print('sensor tof %.2f'% front)
-    elif front < 40:
-        while front < 40:
+
+    elif front < desired_distance:
+        while front < desired_distance:
+
             left_motor.setVelocity(robot_parameters.SPEED * -0.1)
             right_motor.setVelocity(robot_parameters.SPEED * -0.1)
             robot.step(TIME_STEP)
@@ -300,14 +335,11 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
 
 
 ''' turn
-# @brief Makes robot turn left, right or backward.
+# @brief Drive robot motors and set encoders position
+# to turn by exactly 90 or 180 degrees.
 #
-# @param robot: object with robot instance
 # @param move_direction: variable with direction where to move in global directions
-# @param left_motor: object with left motor instance
-# @param right_motor: object with right motor instance
-# @param ps_left: object with left position sensor instance
-# @param ps_right: object with right position sensor instance
+# @params robot, left_motor, right_motor, ps_left, ps_right: variables with robot devices
 #
 # @retv None
 '''
@@ -350,16 +382,39 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
 
     wait_move_end(robot, ps_left, ps_right)
 
-def turn_gyro(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
-    print(1)
+
+''' move_back
+# @brief Moves robot back to previous valid fork (Deep first search).
+# 
+# @param move_direction: variable with direction where to move in global directions
+# @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
+#
+# @retv None
+'''
+def move_back(destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
+               robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path):
+    
+    while destination not in maze_map[robot_position]:
+        for cell in reversed(fork[fork_number]):
+            
+            robot_position, robot_orientation = move_one_position_graph(cell, robot_position, robot_orientation, robot,\
+                                                                ps, tof, left_motor, right_motor, ps_left, ps_right) 
+
+            fork[fork_number].pop()
+            path.pop()
+
+        fork_count[fork_number] -= 1
+        if fork_count[fork_number] == 0:
+                fork_number -= 1
+
+    return fork, fork_number,fork_count, path, robot_orientation, robot_position
+
 
 ''' wait_move_end
 # @brief Stops main loop execution until robot ends move.
 #
-# @param robot: object with robot instance
-# @param ps_left: object with left position sensor instance
-# @param ps_right: object with right position sensor instance
-#
+# @params robot, ps_left, ps_right: variables with robot devices
+# 
 # @retv None
 '''
 def wait_move_end(robot, ps_left, ps_right):
