@@ -1,7 +1,6 @@
 """flood_fill_py controller."""
 
-from controller import Robot #Keyboard
-from collections import namedtuple
+from controller import Robot
 #my modules
 from Constants import *
 import main_functions as main_f
@@ -9,14 +8,16 @@ import main_functions as main_f
 def run_robot(robot):
 
     match mode_params.ALGORITHM:
-        case 1:
+        case algorithms.KEYBOARD:
             main_f.keyboard_main(robot)
-        case 2:
+        case algorithms.FLOODFILL:
             main_f.floodfill_main(robot)
-        case 3:
+        case algorithms.DFS:
             main_f.DFS_main(robot)
-        case 4:
+        case algorithms.BFS:
             main_f.BFS_main(robot)
+        case algorithms.A_STAR:
+            main_f.A_star_main(robot)
             
 
 if __name__ == "__main__":

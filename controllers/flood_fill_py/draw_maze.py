@@ -39,7 +39,7 @@ def init_maze(maze_map, distance, size):
     maze.width(5)
     #draw walls
     i = 0
-    if mode_params.ALGORITHM == 2:
+    if mode_params.ALGORITHM == algorithms.FLOODFILL:
         for y in range(-480, 480, size):
             for x in range(-480, 480, size):
                 write_distance(x, y, distance[i], text)
@@ -48,7 +48,7 @@ def init_maze(maze_map, distance, size):
                 else:
                     draw_wall(maze_map[i] - 64, x, y, size, maze)
                 i += 1
-    else: #graph
+    else: #graph algorithms
         for y in range(-480, 480, size):
             for x in range(-480, 480, size):
                 cell = graph_walls_convert(maze_map[i], i)
@@ -92,6 +92,7 @@ def draw_maze(maze_map, distance):
 
     done()
 
+
 ''' update_maze_speedrun
 # @brief Update maze visualisation with actual robot position and path.
 # @param size: size: variable with side size of one maze cell
@@ -114,6 +115,7 @@ def update_maze_speedrun(size, lines, robot_position):
         
         update()
         var.main_event.set()
+
 
 ''' update_maze_search
 # @brief Update maze visualisation with visited cells, discovered walls and distance values.
@@ -139,7 +141,7 @@ def update_maze_search(size, visited_cell, text, maze):
         yy = int(var.robot_pos / 16)
         yy = -480 + yy * size
 
-        if mode_params.ALGORITHM == 2: #floodfill
+        if mode_params.ALGORITHM == algorithms.FLOODFILL:
             draw_wall(var.maze_map_global[var.robot_pos] - 64, xx, yy, size, maze)
             if var.distance_update:
                 i = 0
@@ -163,14 +165,14 @@ def update_maze_search(size, visited_cell, text, maze):
 def draw_center(size, maze):
         center = [119, 120, 135]
         for center_cell in center:
-            if mode_params.ALGORITHM == 2:
+            if mode_params.ALGORITHM == algorithms.FLOODFILL:
                 check = (var.maze_map_global[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED
-            else: #graphs
+            else: #graphs algorithms
                 check = len(var.maze_map_global[center_cell]) == 0 #inside unvisited nodes have 4 edges
             if check:
                 xx = center_cell % 16
                 xx = -480 + xx * size 
-                yy = int(center_cell / 16)
+                yy = center_cell // 16
                 yy = -480 + yy * size
                 match center_cell:
                     case 119:
@@ -179,8 +181,6 @@ def draw_center(size, maze):
                         draw_wall(6, xx, yy, size, maze)
                     case 135:
                         draw_wall(9, xx, yy, size, maze)
-
-
 
 
 ''' line
@@ -197,6 +197,7 @@ def line(start_x, start_y, end_x, end_y, t):
     t.goto(start_x, start_y)
     t.down()
     t.goto(end_x, end_y) 
+
 
 ''' draw_path
 # @brief Draw robot path
@@ -216,6 +217,7 @@ def draw_path(last_x, last_y, size, t):
     line(-450 + last_x * size, -450 + last_y * size, -450 + next_x * size, -450 + next_y * size, t)
 
     return next_x, next_y
+
 
 ''' draw_position
 # @brief Draw mark in maze cell where robot is right now
@@ -248,6 +250,7 @@ def  write_distance(x, y, distance, t):
     t.goto(x + 8, y + 16)
     t.write('%i' % distance, font=("Verdana", 13, 'bold'))
     t.pendown()
+
 
 ''' draw_wall
 # @brief Draw corresponding walls and values in each field.
@@ -310,6 +313,7 @@ def draw_wall(maze_map, x, y, size, t):
             line(x, y, x + size, y, t)
             line(x, y, x, y + size, t)
             print('WTF POLE %i' % maze_map )
+
 
 ''' graph_walls_convert 
 # @brief Convert edges in node to value which represents walls configuration.

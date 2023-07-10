@@ -244,6 +244,98 @@ def check_possible_routes_DFS(adjacent_cells, visited, stack, target):
     return path
 
 
+''' check_possible_routes_A_star  
+# @brief Add possible adjacent cells to queue and then decides to which cell move next.
+# First item in queue is chosen when robot current position is
+# a fork or dead end (breadth first search). Otherwise last item in queue is chosen.
+#
+# @param adjacent_cells: list with cells accesible from current robot position
+# @param visited: list with cells already added to queue
+# @param queue: queue with cells which will be visited
+# @param fork: bool variable which informs if current cell is a fork
+# @param target: variable with a cell which is a target
+#
+# @retval current_destination: variable with a cell to which move next
+# @retval visited: updated list with cells already added to queue
+# @retval queue: updated queue with cells which will be visited
+# @retval deadend: bool variable which informs if current cell is a dead end and robot need's to move back
+# @retval searching_end: bool variable which informs if target was found i.e. run is ended
+'''
+def check_possible_routes_A_star(open, cost):
+    current_destination = open[0]
+    for i in open: #wybor do ktorego pola idziemy czyli z cost_F = min
+        Fcost_i = cost[i][0] + cost[i][1]
+        Fcost_curr = cost[current_destination][0] + cost[current_destination][1]
+        if (Fcost_i < Fcost_curr) or (Fcost_i == Fcost_curr and cost[i][1] < cost[current_destination][1]):
+            current_destination = i
+    
+    return current_destination
+
+
+def update_neighbours_costs(neighbours, open,  closed, parent, cost, current_position):
+    for neighbour in neighbours:
+        if neighbour in closed:
+            continue
+
+        new_cost = cost[current_position][0] + calc_cost(current_position, neighbour)
+        if (neighbour not in open) or new_cost < (cost[neighbour][0] + cost[neighbour][1]):
+            neighbour_Gcost = new_cost
+            neighbour_Hcost = calc_cost(neighbour, maze_parameters.TARGET_CELL)
+            cost[neighbour] = [neighbour_Gcost, neighbour_Hcost]
+            parent[neighbour] = current_position
+            
+            if neighbour not in open:
+                open.append(neighbour)
+            
+            if neighbour == maze_parameters.TARGET_CELL:
+                break
+
+    return open, parent, cost
+
+
+def get_back_path_A_star(maze_map, target, robot_position, parent):
+    path_to_target = []
+    path_to_current = []
+    path = []
+    node = target
+    while True: #check path from target
+        path_to_target.append(node)
+        
+        if node in maze_map[robot_position]: #path founded
+            return path_to_target
+            
+        if parent[node] == node: #node is start position 
+            break
+        node = parent[node]
+    
+    node = robot_position
+    while True: #check path from current position
+        path_to_current.append(node)
+        
+        if target in maze_map[node]: #path founded
+            path_to_current.append(target)
+            path_to_current.pop(0)
+            path_to_current.reverse()
+            return path_to_current
+        
+        if parent[node] == node: #node is start position 
+            break
+        node = parent[node]
+    
+    #combine both paths to get final path
+    while path_to_target[-1] == path_to_current[-1]:
+        last = path_to_target[-1]
+        path_to_target.pop()
+        path_to_current.pop()
+    
+    path_to_target.append(last)
+    path_to_current.reverse()
+    path_to_current.pop()
+
+    path = path_to_target + path_to_current
+    return path
+
+
 def check_fork(connections, robot_position, fork, fork_number, fork_count):
     
     dead_end = False
@@ -302,7 +394,7 @@ def get_backward_path(graph, start, target):
                     queue.append(n)
                     parent[n] = s
                     if n == target:
-                        while parent[n] != n:
+                        while n != start: #or parent[n] != n
                             path.append(n)
                             n = parent[n]
                         search_end = True
@@ -464,6 +556,65 @@ def mark_center(maze_map):
     return maze_map
 
 
+''' mark_center_graph
+# @brief Adds walls to unvisited cells in center
+#
+# @param maze_map: list with actual maze map with walls
+#
+# @retval maze_map: list with updated maze map
+'''
+def mark_center_graph(maze_map, closed):
+    
+    center = [119, 120, 135]
+    rows = maze_parameters.ROWS
+
+    for center_cell in center:
+        up = center_cell + rows
+        down = center_cell - rows
+        left = center_cell - 1
+        right = center_cell + 1
+        match center_cell:
+            case 119:
+                if center_cell not in closed:
+                    maze_map[center_cell] = [center_cell + 1, center_cell + rows] 
+            case 120:
+                if center_cell not in closed:
+                    maze_map[center_cell] = [center_cell - 1, center_cell + rows] 
+            case 135:
+                if center_cell not in closed:
+                    maze_map[center_cell] = [center_cell + 1, center_cell - rows] 
+    
+    #add 
+
+    for route in routes:
+        if route not in maze_map[robot_position]: #wall present - remove connected cell in node
+            if route in maze_map[route]: #try to remove connection only if it is still in this node 
+                maze_map[route].remove(route)
+
+    return maze_map
+
+
+
+    for center_cell in center:
+        
+        if (maze_map[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED:
+            match center_cell:
+                case 119:
+                    maze_map[center_cell] = 3 
+                    maze_map[center_cell - 1] |= direction.EAST
+                    maze_map[center_cell - 16] |= direction.NORTH
+                case 120:
+                    maze_map[center_cell] = 6 
+                    maze_map[center_cell + 1] |= direction.WEST
+                    maze_map[center_cell - 16] |= direction.NORTH
+                case 135:
+                    maze_map[center_cell] = 9 
+                    maze_map[center_cell - 1] |= direction.EAST
+                    maze_map[center_cell + 16] |= direction.SOUTH
+    
+    return maze_map
+
+
 ''' check_distance
 # @brief Fills unvisited cells with 4 walls to verify if the shortest path was find.
 #
@@ -487,6 +638,32 @@ def check_distance(distance, maze_map, target):
     shortest_path = (distance[0] >= distance_check[0]) #could be just equal
 
     return shortest_path
+
+
+def calc_cost(start, target):
+    
+    #index to matrix/grid
+    point1 = [start % 4, start // 4] 
+    point2 = [target % 4, target // 4]
+
+    distance = 0
+    for x1, x2 in zip(point1, point2):
+        difference = x2 - x1
+        absolute_difference = abs(difference)
+        distance += absolute_difference
+
+    return distance
+
+
+def get_path_A_star(robot_position, parent):
+    path = []
+    while robot_position != maze_parameters.START_CELL:
+        path.append(robot_position)
+        robot_position = parent[robot_position]
+    
+    path.reverse()
+
+    return path
 
 
 ''' read_file

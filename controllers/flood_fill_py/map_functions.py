@@ -132,7 +132,7 @@ def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
     return maze_map
 
 
-''' add_walls_graph
+''' add_walls_graph TODO init inside cells with all connections, not empty
 # @brief Substitute for add_wall for graphs.
 # Add connected cells according to detected walls.
 # Then remove connected cells in respective neighbouring fields according to detected walls.
