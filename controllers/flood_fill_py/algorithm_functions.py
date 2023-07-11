@@ -279,7 +279,7 @@ def update_neighbours_costs(neighbours, open,  closed, parent, cost, current_pos
 
         new_cost = cost[current_position][0] + calc_cost(current_position, neighbour)
         if (neighbour not in open) or new_cost < (cost[neighbour][0] + cost[neighbour][1]):
-            neighbour_Gcost = new_cost
+            neighbour_Gcost = new_cost 
             neighbour_Hcost = calc_cost(neighbour, maze_parameters.TARGET_CELL)
             cost[neighbour] = [neighbour_Gcost, neighbour_Hcost]
             parent[neighbour] = current_position
@@ -556,14 +556,14 @@ def mark_center(maze_map):
     return maze_map
 
 
-''' mark_center_graph
+''' mark_center_graph TODO works only for A*, change init_graph 
 # @brief Adds walls to unvisited cells in center
 #
 # @param maze_map: list with actual maze map with walls
 #
 # @retval maze_map: list with updated maze map
 '''
-def mark_center_graph(maze_map, closed):
+def mark_center_graph(maze_map, path):
     
     center = [119, 120, 135]
     rows = maze_parameters.ROWS
@@ -575,43 +575,15 @@ def mark_center_graph(maze_map, closed):
         right = center_cell + 1
         match center_cell:
             case 119:
-                if center_cell not in closed:
+                if center_cell not in path:
                     maze_map[center_cell] = [center_cell + 1, center_cell + rows] 
             case 120:
-                if center_cell not in closed:
+                if center_cell not in path:
                     maze_map[center_cell] = [center_cell - 1, center_cell + rows] 
             case 135:
-                if center_cell not in closed:
+                if center_cell not in path:
                     maze_map[center_cell] = [center_cell + 1, center_cell - rows] 
-    
-    #add 
 
-    for route in routes:
-        if route not in maze_map[robot_position]: #wall present - remove connected cell in node
-            if route in maze_map[route]: #try to remove connection only if it is still in this node 
-                maze_map[route].remove(route)
-
-    return maze_map
-
-
-
-    for center_cell in center:
-        
-        if (maze_map[center_cell] & maze_parameters.VISITED) != maze_parameters.VISITED:
-            match center_cell:
-                case 119:
-                    maze_map[center_cell] = 3 
-                    maze_map[center_cell - 1] |= direction.EAST
-                    maze_map[center_cell - 16] |= direction.NORTH
-                case 120:
-                    maze_map[center_cell] = 6 
-                    maze_map[center_cell + 1] |= direction.WEST
-                    maze_map[center_cell - 16] |= direction.NORTH
-                case 135:
-                    maze_map[center_cell] = 9 
-                    maze_map[center_cell - 1] |= direction.EAST
-                    maze_map[center_cell + 16] |= direction.SOUTH
-    
     return maze_map
 
 

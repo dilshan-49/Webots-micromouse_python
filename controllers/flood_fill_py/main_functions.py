@@ -204,6 +204,9 @@ def DFS_main(robot):
                     
                     print('Target reached')
                     print('Searching time: %.2f'% robot.getTime(),'s')
+                    var.main_event.wait()
+                    var.main_event.clear()
+                    maze_map = algorithm_f.mark_center_graph(maze_map, path)
                     algorithm_f.write_file(path_file, path)
                     algorithm_f.write_file(maze_file, maze_map)
                     input("press any key to end")
@@ -339,7 +342,7 @@ def BFS_main(robot):
                 
                 maze_map = map_f.add_walls_graph(maze_map, robot_position, robot_orientation, walls)
                 
-                path.append(robot_position)
+                # path.append(robot_position)
                 
                 var.robot_pos = robot_position
 
@@ -349,8 +352,11 @@ def BFS_main(robot):
                 if robot_position == target:
                     print('Target reached')
                     print('Searching time: %.2f'% robot.getTime(),'s')
-                    path2 = algorithm_f.get_backward_path(maze_map, maze_parameters.START_CELL, target)
-                    algorithm_f.write_file(path_file, path2)
+                    path = algorithm_f.get_backward_path(maze_map, maze_parameters.START_CELL, target)
+                    var.main_event.wait()
+                    var.main_event.clear()
+                    maze_map = algorithm_f.mark_center_graph(maze_map, path)
+                    algorithm_f.write_file(path_file, path)
                     algorithm_f.write_file(maze_file, maze_map)
                     input("press any key to end")
                     exit(0)
@@ -367,18 +373,8 @@ def BFS_main(robot):
                         temp_graph[cell] = maze_map[cell]
                     
                     back_path = algorithm_f.get_backward_path(temp_graph, robot_position, current_destination)
-                    
-                    for n in reversed(back_path):
-                        Move_to = back_path.pop()
-
-                        robot_position, robot_orientation = move_f.move_one_position_graph(Move_to, robot_position, robot_orientation, robot,\
-                                                                            ps, tof, left_motor, right_motor, ps_left, ps_right)
-                        if n not in path:
-                            break
-                        path.pop()
 
                     while back_path:
-                        path.append(Move_to)
                         Move_to = back_path.pop()
                         robot_position, robot_orientation = move_f.move_one_position_graph(Move_to, robot_position, robot_orientation, robot,\
                                                                             ps, tof, left_motor, right_motor, ps_left, ps_right)
@@ -429,7 +425,6 @@ def BFS_main(robot):
                     print('Speedrun time: %.2f'% robot.getTime(),'s')
                     input("press any key to end")
                     exit(0)
-
 
 
 ''' A_star_main
@@ -488,22 +483,29 @@ def A_star_main(robot):
                 open.remove(robot_position)
                 closed.append(robot_position)
                 
+                open, parent, cost = algorithm_f.update_neighbours_costs(maze_map[robot_position], open,  closed, parent, cost, robot_position)
+                
                 var.robot_pos = robot_position
-
                 var.maze_map_global = maze_map
+                var.cost_global = cost
+
                 var.drawing_event.set()
 
-                open, parent, cost = algorithm_f.update_neighbours_costs(maze_map[robot_position], open,  closed, parent, cost, robot_position)
+                # open, parent, cost = algorithm_f.update_neighbours_costs(maze_map[robot_position], open,  closed, parent, cost, robot_position)
 
                 if robot_position == target:
                     print('Target reached')
                     print('Searching time: %.2f'% robot.getTime(),'s')
                     path = algorithm_f.get_path_A_star(robot_position, parent)
+                    var.main_event.wait()
+                    var.main_event.clear()
+                    maze_map = algorithm_f.mark_center_graph(maze_map, path)
                     algorithm_f.write_file(path_file, path)
                     algorithm_f.write_file(maze_file, maze_map)
                     input("press any key to end")
                     exit(0)
                 
+
                 current_destination = algorithm_f.check_possible_routes_A_star(open, cost)
 
                 if current_destination not in maze_map[robot_position]: #not adjacent cell e.g. we move back farther than 1 cell      

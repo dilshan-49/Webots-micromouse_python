@@ -3,11 +3,12 @@ from collections import namedtuple
 # Values to change to run program in different modes etc. START
 
 # 1- search, 2 - speeedrun
-MODE = 1                       
+MODE = 2                    
 # 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS), 4 - breadth first search (BFS), 5 - A*
-ALGORITHM = 5           
+ALGORITHM = 2           
 # 1- print sensors values etc. for testing, 0 - no prints
 TESTING = 0
+
 #only for floodfill
 # True - discover whole maze (guaranteed shortest path, but long searching time),
 # False - make 2 runs: start -> target and target -> start (shorter searching time, but shortest path not guaranteed)

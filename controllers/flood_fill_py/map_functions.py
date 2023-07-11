@@ -314,7 +314,9 @@ def init_maze_map_graph():
     cell = 17
     #inside cells
     while True:
+        # maze_map[cell] = [cell + rows, cell + 1, cell - rows, cell - 1]
         maze_map[cell] = []
+        
         end = (cell == (right_up_corner - 1 - rows))
         if end:
             break

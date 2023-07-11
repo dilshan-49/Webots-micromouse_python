@@ -138,7 +138,7 @@ def update_maze_search(size, visited_cell, text, maze):
 
         xx = var.robot_pos % 16
         xx = -480 + xx * size 
-        yy = int(var.robot_pos / 16)
+        yy = var.robot_pos // 16
         yy = -480 + yy * size
 
         if mode_params.ALGORITHM == algorithms.FLOODFILL:
@@ -154,6 +154,15 @@ def update_maze_search(size, visited_cell, text, maze):
         else: #graphs
             cell = graph_walls_convert(var.maze_map_global[var.robot_pos], var.robot_pos)
             draw_wall(cell, xx, yy, size, maze)
+            
+            if mode_params.ALGORITHM == algorithms.A_STAR:
+                text.clear()
+                for key in var.cost_global:
+                    x = key % 16
+                    x = -480 + x * size 
+                    y = key // 16
+                    y = -480 + y * size
+                    write_cost(x, y, var.cost_global[key], text)
         
         if var.robot_pos == 136:
             draw_center(size, maze)
@@ -170,17 +179,17 @@ def draw_center(size, maze):
             else: #graphs algorithms
                 check = len(var.maze_map_global[center_cell]) == 0 #inside unvisited nodes have 4 edges
             if check:
-                xx = center_cell % 16
-                xx = -480 + xx * size 
-                yy = center_cell // 16
-                yy = -480 + yy * size
+                x = center_cell % 16
+                x = -480 + x * size 
+                y = center_cell // 16
+                y = -480 + y * size
                 match center_cell:
                     case 119:
-                        draw_wall(3, xx, yy, size, maze)
+                        draw_wall(3, x, y, size, maze)
                     case 120:
-                        draw_wall(6, xx, yy, size, maze)
+                        draw_wall(6, x, y, size, maze)
                     case 135:
-                        draw_wall(9, xx, yy, size, maze)
+                        draw_wall(9, x, y, size, maze)
 
 
 ''' line
@@ -245,11 +254,34 @@ def draw_position(size, t):
 # @param t: corresponding turtle object
 # @retval None
 '''
-def  write_distance(x, y, distance, t):
+def write_distance(x, y, distance, t):
     t.penup()
     t.goto(x + 8, y + 16)
     t.write('%i' % distance, font=("Verdana", 13, 'bold'))
-    t.pendown()
+    # t.pendown()
+
+
+''' write_cost
+# @brief Write distance value in maze cell
+# @param x: variable with text x coordinate
+# @param y: variable with text y coordinate
+# @param distance: variable with distance value to target
+# @param t: corresponding turtle object
+# @retval None
+'''
+def write_cost(x, y, cost, t):
+    Gcost = cost[0]
+    Hcost = cost[1]
+    Fcost = Gcost + Hcost
+    t.penup()
+    t.goto(x + 16, y + 8)
+    t.write('%i' % Fcost, font=("Verdana", 14, 'bold'))
+    
+    t.goto(x + 6, y + 32)
+    t.write('%i' % Gcost, font=("Verdana", 12, 'bold'))
+    
+    t.goto(x + 36, y + 32)
+    t.write('%i' % Hcost, font=("Verdana", 12, 'bold'))
 
 
 ''' draw_wall
