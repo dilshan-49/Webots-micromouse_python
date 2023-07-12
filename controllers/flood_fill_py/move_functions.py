@@ -383,15 +383,22 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
     wait_move_end(robot, ps_left, ps_right)
 
 
-''' move_back
+''' move_back_DFS
 # @brief Moves robot back to previous valid fork (Deep first search).
 # 
-# @param move_direction: variable with direction where to move in global directions
+# @param destination: variable with robot destination cell
+# @param maze_map: dictionary with maze map graph
+# @param robot_position: variable with current robot position in maze
+# @param fork: dictionary with paths to each fork from current position
+# @param fork_number: variable with number of last used fork
+# @param fork_count: dictionary with number of unused routes for each fork
+# @param robot_orientation: variable with current robot orientation in maze
 # @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
+# @param path: list with actual path from start to current position
 #
-# @retv None
+# @retv fork, fork_number, fork_count, path, robot_orientation, robot_position: updated values
 '''
-def move_back(destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
+def move_back_DFS(destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
                robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path):
     
     while destination not in maze_map[robot_position]:
@@ -407,7 +414,7 @@ def move_back(destination, maze_map, robot_position, fork, fork_number, fork_cou
         if fork_count[fork_number] == 0:
                 fork_number -= 1
 
-    return fork, fork_number,fork_count, path, robot_orientation, robot_position
+    return fork, fork_number, fork_count, path, robot_orientation, robot_position
 
 
 ''' wait_move_end

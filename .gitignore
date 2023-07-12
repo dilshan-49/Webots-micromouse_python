@@ -1,4 +1,3 @@
-maze.txt
-path.txt
-
-
+test.py
+*.pkl
+Results/

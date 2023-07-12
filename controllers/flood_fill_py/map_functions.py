@@ -1,12 +1,11 @@
 #Map updating functions
 from Constants import *
 
+
 ''' detect_walls
 # @brief Read and process sensors to detect walls
 #
-# @param robot: object with robot instance
-# @param ps: list of distance IR sensors objects
-# @param tof: object with distance Tof sensor
+# @param robot, ps, tof: variables with robot devices
 # @param number_of_reads: variable which indicates how many times to read sensors
 #
 # @retval left_wall: variable which indicates left wall presence

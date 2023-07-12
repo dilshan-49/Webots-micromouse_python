@@ -2,12 +2,14 @@ from turtle import *
 import var
 from Constants import *
 
+
 ''' init_maze
 # @brief Init maze window with grid and starting walls
 #
 # @param maze_map: list with initial maze map with walls
 # @param distance: list with initial distances values/path
 # @param size: variable with side size of one maze cell
+#
 # @retval text: object with maze text/numbers
 # @retval maze: object with maze walls
 '''
@@ -62,6 +64,7 @@ def init_maze(maze_map, distance, size):
 # @brief Draw maze with distance values and discovered walls.
 # For search run also mark visited cells.
 # For speedrun draws robot path and actual position.
+#
 # @param maze_map: list with actual maze map with walls
 # @param distance: list with actual distances values/path
 #
@@ -95,9 +98,11 @@ def draw_maze(maze_map, distance):
 
 ''' update_maze_speedrun
 # @brief Update maze visualisation with actual robot position and path.
+#
 # @param size: size: variable with side size of one maze cell
 # @param lines: object with lines that draw robot path
 # @param robot_position: object with circle that indicates actual robot position
+#
 # @retval None
 '''
 def update_maze_speedrun(size, lines, robot_position):
@@ -118,14 +123,19 @@ def update_maze_speedrun(size, lines, robot_position):
 
 
 ''' update_maze_search
-# @brief Update maze visualisation with visited cells, discovered walls and distance values.
+# @brief Update maze visualisation with visited cells and discovered walls and distance values.
+# For floodfill distance values are also drawn.
+# For A* costs values are also drawn.
+#
 # @param size: variable with side size of one maze cell
 # @param visited_cell: object with circles that indicates cells visited by robot
 # @param text: object with maze text/numbers
 # @param maze: object with maze walls
+#
 # @retval None
 '''
 def update_maze_search(size, visited_cell, text, maze):
+    
     draw_position(size, visited_cell)
 
     while var.robot_pos != var.target_global:
@@ -171,6 +181,14 @@ def update_maze_search(size, visited_cell, text, maze):
         var.main_event.set()
 
 
+''' draw_center
+# @brief Update maze visualisation with center cells at the end accordingly to visited cells.
+#
+# @param size: variable with side size of one maze cell
+# @param maze: object with maze walls
+#
+# @retval None
+'''
 def draw_center(size, maze):
         center = [119, 120, 135]
         for center_cell in center:
@@ -193,12 +211,14 @@ def draw_center(size, maze):
 
 
 ''' line
-# @brief Draw line
+# @brief Draw line.
+#
 # @param start_x: variable with line beginning x coordinate
 # @param start_y: variable with line beginning y coordinate
 # @param end_x: variable with line ending x coordinate
 # @param end_y: variable with line ending y coordinate
 # @param t: corresponding turtle object
+#
 # @retval None
 '''
 def line(start_x, start_y, end_x, end_y, t):
@@ -209,11 +229,13 @@ def line(start_x, start_y, end_x, end_y, t):
 
 
 ''' draw_path
-# @brief Draw robot path
+# @brief Draw robot path.
+#
 # @param last_x: variable with last robot x coordinate position
 # @param last_y: variable with last robot y coordinate position
 # @param size: variable with side size of one maze cell
 # @param t: corresponding turtle object
+#
 # @retval next_x: variable with actual robot x coordinate position
 # @retval next_y: variable with actual robot y coordinate position
 '''
@@ -229,9 +251,11 @@ def draw_path(last_x, last_y, size, t):
 
 
 ''' draw_position
-# @brief Draw mark in maze cell where robot is right now
+# @brief Draw mark in maze cell where robot is right now.
+#
 # @param size: variable with side size of one maze cell
 # @param t: corresponding turtle object
+#
 # @retval None
 '''
 def draw_position(size, t):
@@ -247,11 +271,13 @@ def draw_position(size, t):
 
 
 ''' write_distance
-# @brief Write distance value in maze cell
+# @brief Write distance value in maze cell.
+#
 # @param x: variable with text x coordinate
 # @param y: variable with text y coordinate
 # @param distance: variable with distance value to target
 # @param t: corresponding turtle object
+#
 # @retval None
 '''
 def write_distance(x, y, distance, t):
@@ -262,11 +288,13 @@ def write_distance(x, y, distance, t):
 
 
 ''' write_cost
-# @brief Write distance value in maze cell
+# @brief Write costs values in maze cell. Used in A*
+#
 # @param x: variable with text x coordinate
 # @param y: variable with text y coordinate
-# @param distance: variable with distance value to target
+# @param cost: list with cell costs values 
 # @param t: corresponding turtle object
+#
 # @retval None
 '''
 def write_cost(x, y, cost, t):
@@ -292,6 +320,7 @@ def write_cost(x, y, cost, t):
 # @param y: variable with offest in y direction
 # @param size: value with one field size (for easier change when changing window size)
 # @param t: corresponding turtle object
+#
 # @retval None
 '''
 def draw_wall(maze_map, x, y, size, t):
@@ -350,6 +379,9 @@ def draw_wall(maze_map, x, y, size, t):
 ''' graph_walls_convert 
 # @brief Convert edges in node to value which represents walls configuration.
 # Made for compatibility with visualisation.
+#
+# @param maze_field: list with connected fields to position
+# @param position: variable with maze position
 #
 # @retval cell_value: variable with value which represents walls configuration.
 '''

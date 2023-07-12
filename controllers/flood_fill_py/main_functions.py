@@ -1,4 +1,4 @@
-from controller import Robot, Keyboard
+from controller import Keyboard
 from collections import namedtuple, deque
 from threading import Thread
 #my modules
@@ -212,11 +212,11 @@ def DFS_main(robot):
                     input("press any key to end")
                     exit(0)
                 
-                fork, fork_number, fork_count, dead_end = algorithm_f.check_fork(maze_map[robot_position], robot_position, fork, fork_number, fork_count)
+                fork, fork_number, fork_count, dead_end = algorithm_f.check_fork_DFS(maze_map[robot_position], robot_position, fork, fork_number, fork_count)
                 
                 if dead_end:
                     fork, fork_number, fork_count, path, robot_orientation, robot_position = \
-                        move_f.move_back(stack[-1], maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
+                        move_f.move_back_DFS(stack[-1], maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
                                                 robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path)
                     fork[fork_number].append(path[-1])
                             
@@ -226,7 +226,7 @@ def DFS_main(robot):
                 if current_destination not in maze_map[robot_position]:
                     fork[fork_number].pop()
                     fork, fork_number, fork_count, path, robot_orientation, robot_position = \
-                        move_f.move_back(current_destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
+                        move_f.move_back_DFS(current_destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
                                                 robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path)
                     fork[fork_number].append(robot_position)
 
@@ -352,7 +352,7 @@ def BFS_main(robot):
                 if robot_position == target:
                     print('Target reached')
                     print('Searching time: %.2f'% robot.getTime(),'s')
-                    path = algorithm_f.get_backward_path(maze_map, maze_parameters.START_CELL, target)
+                    path = algorithm_f.get_back_path_BFS(maze_map, maze_parameters.START_CELL, target)
                     var.main_event.wait()
                     var.main_event.clear()
                     maze_map = algorithm_f.mark_center_graph(maze_map, path)
@@ -372,7 +372,7 @@ def BFS_main(robot):
                     for cell in visited:#creaty sub-graph only from visited cells
                         temp_graph[cell] = maze_map[cell]
                     
-                    back_path = algorithm_f.get_backward_path(temp_graph, robot_position, current_destination)
+                    back_path = algorithm_f.get_back_path_BFS(temp_graph, robot_position, current_destination)
 
                     while back_path:
                         Move_to = back_path.pop()
@@ -428,7 +428,7 @@ def BFS_main(robot):
 
 
 ''' A_star_main
-# @brief Main program for Breadth first search algorithm controller.
+# @brief Main program for A* algorithm controller.
 #
 # @param robot: object with robot instance
 #
@@ -483,7 +483,7 @@ def A_star_main(robot):
                 open.remove(robot_position)
                 closed.append(robot_position)
                 
-                open, parent, cost = algorithm_f.update_neighbours_costs(maze_map[robot_position], open,  closed, parent, cost, robot_position)
+                open, parent, cost = algorithm_f.update_neighbours_costs_A_star(maze_map[robot_position], open,  closed, parent, cost, robot_position)
                 
                 var.robot_pos = robot_position
                 var.maze_map_global = maze_map

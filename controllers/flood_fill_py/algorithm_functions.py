@@ -146,7 +146,7 @@ def where_to_move_graph(robot_position, current_destination):
     return move_direction
 
 
-''' check_possible_routes  
+''' check_possible_routes_BFS  
 # @brief Add possible adjacent cells to queue and then decides to which cell move next.
 # First item in queue is chosen when robot current position is
 # a fork or dead end (breadth first search). Otherwise last item in queue is chosen.
@@ -186,12 +186,11 @@ def check_possible_routes_BFS(adjacent_cells, visited, queue, fork, target):
 
 
 ''' check_possible_routes_DFS  
-# @brief Add possible adjacent cells to queue and then decides to which cell move next.
-# First item in queue is chosen when robot current position is
-# a fork or dead end (breadth first search). Otherwise last item in queue is chosen.
+# @brief Add possible adjacent cells to stack and then decides to which cell move next.
+# Last item in stack is chosen.
 #
 # @param adjacent_cells: list with cells accesible from current robot position
-# @param visited: list with cells already added to queue
+# @param visited: list with cells already added to stack
 # @param stack: stack with cells which will be visited
 # @param target: variable with a cell which is a target
 #
@@ -245,25 +244,18 @@ def check_possible_routes_DFS(adjacent_cells, visited, stack, target):
 
 
 ''' check_possible_routes_A_star  
-# @brief Add possible adjacent cells to queue and then decides to which cell move next.
-# First item in queue is chosen when robot current position is
-# a fork or dead end (breadth first search). Otherwise last item in queue is chosen.
+# @brief Decides to which cell move next.
+# Cell with the lowest overall cost (Fcost) is chosen. If more cells have equal
+# Fcost, then cell with lowest Hcost (closer to target) is chosen.
 #
-# @param adjacent_cells: list with cells accesible from current robot position
-# @param visited: list with cells already added to queue
-# @param queue: queue with cells which will be visited
-# @param fork: bool variable which informs if current cell is a fork
-# @param target: variable with a cell which is a target
+# @param open: list with cells to visit
+# @param cost: list of costs, which contain Gcost and Hcost
 #
 # @retval current_destination: variable with a cell to which move next
-# @retval visited: updated list with cells already added to queue
-# @retval queue: updated queue with cells which will be visited
-# @retval deadend: bool variable which informs if current cell is a dead end and robot need's to move back
-# @retval searching_end: bool variable which informs if target was found i.e. run is ended
 '''
 def check_possible_routes_A_star(open, cost):
     current_destination = open[0]
-    for i in open: #wybor do ktorego pola idziemy czyli z cost_F = min
+    for i in open:
         Fcost_i = cost[i][0] + cost[i][1]
         Fcost_curr = cost[current_destination][0] + cost[current_destination][1]
         if (Fcost_i < Fcost_curr) or (Fcost_i == Fcost_curr and cost[i][1] < cost[current_destination][1]):
@@ -272,12 +264,30 @@ def check_possible_routes_A_star(open, cost):
     return current_destination
 
 
-def update_neighbours_costs(neighbours, open,  closed, parent, cost, current_position):
+''' update_neighbours_costs_A_star  
+# @brief Assign and/or update costs of neighbour nodes.
+# New cost is assign to node when it's not in open list or new cost is lower than actual.
+# In addition parent of the node is assigned, which allows to create path later.
+# If target is found, function breaks.
+#
+# @param neighbours: list with cells adjacent to current position
+# @param open: list with cells to visit
+# @param closed: list with cells already visited
+# @param parent: dictionary with parent nodes used to create path
+# @param cost: dictionary of costs, which contain Gcost and Hcost
+# @param current_position: variable with current robot position
+#
+# @retval open: updated list with cells to visit
+# @retval parent: updated dictionary with parent nodes used to create path
+# @retval cost: updated dictionary of costs, which contain Gcost and Hcost
+'''
+def update_neighbours_costs_A_star(neighbours, open, closed, parent, cost, current_position):
     for neighbour in neighbours:
         if neighbour in closed:
             continue
 
         new_cost = cost[current_position][0] + calc_cost(current_position, neighbour)
+
         if (neighbour not in open) or new_cost < (cost[neighbour][0] + cost[neighbour][1]):
             neighbour_Gcost = new_cost 
             neighbour_Hcost = calc_cost(neighbour, maze_parameters.TARGET_CELL)
@@ -293,6 +303,18 @@ def update_neighbours_costs(neighbours, open,  closed, parent, cost, current_pos
     return open, parent, cost
 
 
+''' get_back_path_A_star  
+# @brief Creates a path from current robot position to its current destination.
+# First path from target to start is created. Then path from current position to start is created.
+# If path to current target wasn't found yet, both paths are combined to create path.
+#
+# @param maze_map: dictionary graph with current known maze configuration
+# @param robot_position: variable with current robot position in maze
+# @param target: variable with position to which robot want's to go
+# @param parent: list with parent nodes used to create path
+#
+# @retval path: list with path to target
+'''
 def get_back_path_A_star(maze_map, target, robot_position, parent):
     path_to_target = []
     path_to_current = []
@@ -333,10 +355,27 @@ def get_back_path_A_star(maze_map, target, robot_position, parent):
     path_to_current.pop()
 
     path = path_to_target + path_to_current
+    
     return path
 
 
-def check_fork(connections, robot_position, fork, fork_number, fork_count):
+''' check_fork_DFS  
+# @brief Detect's fork, assign number to it and 
+# monitor possible unused routes from each one which is used for DFS algorithm operation.
+# Also detect's dead-ends.
+#
+# @param connections: list with cells available from current position
+# @param robot_position: variable with current robot position in maze
+# @param fork: dictionary with paths to each fork from current position
+# @param fork_number: variable with number of last used fork
+# @param fork_count: dictionary with number of unused routes for each fork
+#
+# @retval fork: updated fork dictionary
+# @retval fork_number: updated fork number
+# @retval fork_count: updated fork count
+# @retval dead_end: bool variable with info if current cell is dead-end
+'''
+def check_fork_DFS(connections, robot_position, fork, fork_number, fork_count):
     
     dead_end = False
   
@@ -359,7 +398,7 @@ def check_fork(connections, robot_position, fork, fork_number, fork_count):
     return fork, fork_number, fork_count, dead_end
 
 
-''' get_backward_path  
+''' get_back_path_BFS  
 # @brief Creates a path from current robot position to its current destination.
 # It is used when current destination is not in adjacent cell.
 #
@@ -369,7 +408,7 @@ def check_fork(connections, robot_position, fork, fork_number, fork_count):
 #
 # @retval path: list with path to target
 '''
-def get_backward_path(graph, start, target):
+def get_back_path_BFS(graph, start, target):
     
     visited = []
     queue = deque()
@@ -556,10 +595,12 @@ def mark_center(maze_map):
     return maze_map
 
 
-''' mark_center_graph TODO works only for A*, change init_graph 
-# @brief Adds walls to unvisited cells in center
+''' mark_center_graph 
+# @brief Adds walls to unvisited cells in center.
+# Path is used to determine which cells weren't visited.
 #
 # @param maze_map: list with actual maze map with walls
+# @param path: list with path
 #
 # @retval maze_map: list with updated maze map
 '''
@@ -594,7 +635,7 @@ def mark_center_graph(maze_map, path):
 # @param maze_map: list with actual maze map with walls
 # @param target: variable with field number to which robot tries to get
 #
-# @retval shortest: bool variable which informs if shortest path was found
+# @retval shortest_path: bool variable which informs if shortest path was found
 '''      
 def check_distance(distance, maze_map, target):
     
@@ -612,6 +653,15 @@ def check_distance(distance, maze_map, target):
     return shortest_path
 
 
+''' calc_cost  
+# @brief Calculates Manhatan's distance which is used
+# as cost in A* algorithm.
+#
+# @param start: variable with first position
+# @param target: variable with second position
+#
+# @retval distance: Manhatan's distance/cost
+'''
 def calc_cost(start, target):
     
     #index to matrix/grid
@@ -627,6 +677,14 @@ def calc_cost(start, target):
     return distance
 
 
+''' get_path_A_star  
+# @brief Creates final path from start to target with a use of parents list.
+#
+# @param robot_position: variable with current robot position in maze
+# @param parent: list with parent nodes used to create path
+#
+# @retval path: list with path to target
+'''
 def get_path_A_star(robot_position, parent):
     path = []
     while robot_position != maze_parameters.START_CELL:
