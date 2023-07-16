@@ -1,11 +1,12 @@
 from collections import namedtuple
 
-# Values to change to run program in different modes etc. START
+# START Values to change to run program in different modes etc. START
 
 # 1- search, 2 - speeedrun
-MODE = 2                    
-# 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS), 4 - breadth first search (BFS), 5 - A*
-ALGORITHM = 2           
+MODE = 1                    
+# 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS),
+# 4 - breadth first search (BFS), 5 - A*, 6 - A* modified
+ALGORITHM = 6           
 # 1- print sensors values etc. for testing, 0 - no prints
 TESTING = 0
 
@@ -14,7 +15,7 @@ TESTING = 0
 # False - make 2 runs: start -> target and target -> start (shorter searching time, but shortest path not guaranteed)
 WHOLE_SEARCH = False 
 
-# Values to change to run program in different modes etc. END
+# END Values to change to run program in different modes etc. END
 
 # Robot parameters
 TIME_STEP = 64
@@ -33,6 +34,7 @@ FLOODFILL = 2
 DFS = 3
 BFS = 4
 A_STAR = 5
+A_STAR_MOD = 6
 
 # Walls values according to direction (NORTH is not always forward etc.)
 WEST =      1    #  00000001 
@@ -67,12 +69,12 @@ robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED)
 Mode_params = namedtuple('mode_params','SEARCH SPEEDRUN MODE TESTING WHOLE_SEARCH ALGORITHM')
 mode_params = Mode_params(SEARCH, SPEEDRUN, MODE, TESTING, WHOLE_SEARCH, ALGORITHM)
 
-Algorithms = namedtuple('algorithms','KEYBOARD FLOODFILL DFS BFS A_STAR')
-algorithms = Algorithms(KEYBOARD, FLOODFILL, DFS, BFS, A_STAR)
+Algorithms = namedtuple('algorithms','KEYBOARD FLOODFILL DFS BFS A_STAR A_STAR_MOD')
+algorithms = Algorithms(KEYBOARD, FLOODFILL, DFS, BFS, A_STAR, A_STAR_MOD)
 
 Maze_parameters = namedtuple('maze_parameters',
                               'ROWS COLUMNS MAZE_SIZE VISITED TARGET_CELL TILE_LENGTH START_CELL')
 maze_parameters = Maze_parameters(ROWS, COLUMNS, MAZE_SIZE, VISITED, TARGET_CELL, TILE_LENGTH, START_CELL)
 
-Keys = namedtuple("keys", "forward left back right")
-keys = Keys('W', 'A', 'S', 'D')
+Moves = namedtuple("moves", "forward left back right")
+moves = Moves('W', 'A', 'S', 'D')

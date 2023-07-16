@@ -5,6 +5,7 @@ from controller import Robot
 from Constants import *
 import main_functions as main_f
 
+
 def run_robot(robot):
 
     match mode_params.ALGORITHM:
@@ -18,6 +19,8 @@ def run_robot(robot):
             main_f.BFS_main(robot)
         case algorithms.A_STAR:
             main_f.A_star_main(robot)
+        case algorithms.A_STAR_MOD:
+            main_f.A_star_main_modified(robot)
             
 
 if __name__ == "__main__":

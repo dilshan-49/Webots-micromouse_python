@@ -165,7 +165,7 @@ def update_maze_search(size, visited_cell, text, maze):
             cell = graph_walls_convert(var.maze_map_global[var.robot_pos], var.robot_pos)
             draw_wall(cell, xx, yy, size, maze)
             
-            if mode_params.ALGORITHM == algorithms.A_STAR:
+            if mode_params.ALGORITHM == algorithms.A_STAR or mode_params.ALGORITHM == algorithms.A_STAR_MOD:
                 text.clear()
                 for key in var.cost_global:
                     x = key % 16
@@ -284,11 +284,10 @@ def write_distance(x, y, distance, t):
     t.penup()
     t.goto(x + 8, y + 16)
     t.write('%i' % distance, font=("Verdana", 13, 'bold'))
-    # t.pendown()
 
 
 ''' write_cost
-# @brief Write costs values in maze cell. Used in A*
+# @brief Write costs values in maze cell. Used in A* algorithm
 #
 # @param x: variable with text x coordinate
 # @param y: variable with text y coordinate
@@ -306,10 +305,10 @@ def write_cost(x, y, cost, t):
     t.write('%i' % Fcost, font=("Verdana", 14, 'bold'))
     
     t.goto(x + 6, y + 32)
-    t.write('%i' % Gcost, font=("Verdana", 12, 'bold'))
+    t.write('%i' % Gcost, font=("Verdana", 10, 'bold'))
     
     t.goto(x + 36, y + 32)
-    t.write('%i' % Hcost, font=("Verdana", 12, 'bold'))
+    t.write('%i' % Hcost, font=("Verdana", 10, 'bold'))
 
 
 ''' draw_wall
@@ -378,7 +377,8 @@ def draw_wall(maze_map, x, y, size, t):
 
 ''' graph_walls_convert 
 # @brief Convert edges in node to value which represents walls configuration.
-# Made for compatibility with visualisation.
+# Made for compatibility with visualisation which was made for floodfill
+# which doesn't use graph for a maze map.
 #
 # @param maze_field: list with connected fields to position
 # @param position: variable with maze position

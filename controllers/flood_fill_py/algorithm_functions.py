@@ -8,7 +8,7 @@ import var
 
 
 ''' floodfill
-# @brief Floodfill algorythm which calculates shortest path to actual target based on actual maze map.
+# @brief Floodfill algorithm which calculates shortest path to actual target based on actual maze map.
 #
 # @param maze_map: list with actual maze map with walls
 # @param distance: list with actual distances values/path
@@ -53,7 +53,7 @@ def floodfill(maze_map, distance):
 
 
 ''' where_to_move
-# @brief Decide where to move by checking distance values in neighbors cells.
+# @brief Decide where to move by checking distance values in neighbours cells.
 # Depending on robot orientation, value in variable move_direction 
 # is changed so it match global directions. 
 #
@@ -243,7 +243,47 @@ def check_possible_routes_DFS(adjacent_cells, visited, stack, target):
     return path
 
 
-''' check_possible_routes_A_star  
+''' A_star  
+# @brief A* algorithm function which is used to create path between 2 cells.
+# It is used to determine final path as well as paths between current position 
+# and current destination in main program.
+#
+# @param maze_map: dictionary with discovered maze map (or any graph)
+# @param start: variable with starting cell number
+# @param target: variable with targeted cell number
+#
+# @retval path: list withpath from start to target
+'''
+def get_path_A_star(maze_map, start, target):
+    #A* vars
+    open = [] #list of unvisited nodes
+    closed = [] #list of visited nodes
+    cost = {}
+    parent = {}
+    path = []
+    current_position = start
+    cost[start] = [0, calc_cost(start, target)]
+    parent[start] = start
+    open.append(start)
+
+    while open:
+        
+        open.remove(current_position)
+        closed.append(current_position)
+        
+        open, parent, cost = update_neighbours_costs(maze_map[current_position], open, closed, parent, cost, current_position)
+        
+        if current_position == target:
+            while current_position != start:
+                path.append(current_position)
+                current_position = parent[current_position]
+            path.reverse()
+            return path
+        
+        current_position = check_possible_routes_A_star(open, cost)
+
+
+''' check_possible_routes_A_star TODO Implement heap to make it much faster.
 # @brief Decides to which cell move next.
 # Cell with the lowest overall cost (Fcost) is chosen. If more cells have equal
 # Fcost, then cell with lowest Hcost (closer to target) is chosen.
@@ -254,7 +294,7 @@ def check_possible_routes_DFS(adjacent_cells, visited, stack, target):
 # @retval current_destination: variable with a cell to which move next
 '''
 def check_possible_routes_A_star(open, cost):
-    current_destination = open[0]
+    current_destination = open[-1] #if there are 2 cells with same Fcost and Hcost, pick last added to open i.e. neighbour
     for i in open:
         Fcost_i = cost[i][0] + cost[i][1]
         Fcost_curr = cost[current_destination][0] + cost[current_destination][1]
@@ -264,8 +304,8 @@ def check_possible_routes_A_star(open, cost):
     return current_destination
 
 
-''' update_neighbours_costs_A_star  
-# @brief Assign and/or update costs of neighbour nodes.
+''' update_neighbours_costs  
+# @brief Used in A* algorithm. Assign and/or update costs of neighbour nodes.
 # New cost is assign to node when it's not in open list or new cost is lower than actual.
 # In addition parent of the node is assigned, which allows to create path later.
 # If target is found, function breaks.
@@ -281,7 +321,7 @@ def check_possible_routes_A_star(open, cost):
 # @retval parent: updated dictionary with parent nodes used to create path
 # @retval cost: updated dictionary of costs, which contain Gcost and Hcost
 '''
-def update_neighbours_costs_A_star(neighbours, open, closed, parent, cost, current_position):
+def update_neighbours_costs(neighbours, open, closed, parent, cost, current_position):
     for neighbour in neighbours:
         if neighbour in closed:
             continue
@@ -303,7 +343,7 @@ def update_neighbours_costs_A_star(neighbours, open, closed, parent, cost, curre
     return open, parent, cost
 
 
-''' get_back_path_A_star  
+''' get_back_path_A_star  NOT USED anymore, but kept in code :).
 # @brief Creates a path from current robot position to its current destination.
 # First path from target to start is created. Then path from current position to start is created.
 # If path to current target wasn't found yet, both paths are combined to create path.
@@ -408,7 +448,7 @@ def check_fork_DFS(connections, robot_position, fork, fork_number, fork_count):
 #
 # @retval path: list with path to target
 '''
-def get_back_path_BFS(graph, start, target):
+def get_path_BFS(graph, start, target):
     
     visited = []
     queue = deque()
@@ -451,17 +491,17 @@ def get_back_path_BFS(graph, start, target):
 '''
 def change_orientation(robot_orientation, action):
     match action:
-        case keys.right: #turn right
+        case moves.right: #turn right
             if robot_orientation == direction.WEST:
                 robot_orientation = direction.NORTH
             else:
                 robot_orientation //= 2
-        case keys.left: #turn left
+        case moves.left: #turn left
             if robot_orientation == direction.NORTH:
                 robot_orientation = direction.WEST
             else:
                 robot_orientation *= 2
-        case keys.back: #turn back
+        case moves.back: #turn back
             if robot_orientation == direction.NORTH or robot_orientation == direction.EAST:
                 robot_orientation //= 4
             else:
@@ -677,27 +717,28 @@ def calc_cost(start, target):
     return distance
 
 
-''' get_path_A_star  
-# @brief Creates final path from start to target with a use of parents list.
+''' get_path_A_star 
+# @brief Works only for pure A* algorithm. Not used in any main programs anymore.
+# Creates final path from start to target with a use of parents list.
 #
 # @param robot_position: variable with current robot position in maze
 # @param parent: list with parent nodes used to create path
 #
 # @retval path: list with path to target
 '''
-def get_path_A_star(robot_position, parent):
-    path = []
-    while robot_position != maze_parameters.START_CELL:
-        path.append(robot_position)
-        robot_position = parent[robot_position]
+# def get_path_A_star(robot_position, parent):
+#     path = []
+#     while robot_position != maze_parameters.START_CELL:
+#         path.append(robot_position)
+#         robot_position = parent[robot_position]
     
-    path.reverse()
+#     path.reverse()
 
-    return path
+#     return path
 
 
 ''' read_file
-# @brief Read file
+# @brief Read file. Pickle module used.
 #
 # @param file_name: variable with a file name
 #
@@ -716,10 +757,11 @@ def read_file(file_name):
 
 
 ''' write_file
-# @brief Write file
+# @brief Write file. Pickle module used.
 #
 # @param file_name: variable with a file name
 # @param: values: any type of object with a content to write file
+#
 # @retval None
 '''
 def write_file(file_name, values):

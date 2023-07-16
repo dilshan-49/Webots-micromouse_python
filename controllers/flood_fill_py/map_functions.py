@@ -8,17 +8,14 @@ from Constants import *
 # @param robot, ps, tof: variables with robot devices
 # @param number_of_reads: variable which indicates how many times to read sensors
 #
-# @retval left_wall: variable which indicates left wall presence
-# @retval front_wall: variable which indicates front wall presence
-# @retval right_wall: variable which indicates right wall presence
-# @retval back_wall: variable which indicates back wall presence
+# @retvals left_wall, front_wall, right_wall, back_wall: variables which indicate respective walls presence. 
 '''
 def detect_walls(robot, ps, tof, number_of_reads):
     
     avg2_right_sensor = 0    #ps2
     avg4_back_sensor = 0     #ps4
     avg5_left_sensor = 0     #ps5
-    avg7_front_sensor = 0    #ps7
+    # avg7_front_sensor = 0    #ps7
     avg_front_sensor = 0     #tof
 
     ps_values = [0] * 8
@@ -56,7 +53,7 @@ def detect_walls(robot, ps, tof, number_of_reads):
     # front_wall = avg7_front_sensor > 80.0
     right_wall = avg2_right_sensor > 80.0
     back_wall = avg4_back_sensor > 80.0
-    front_wall = avg_front_sensor < 55
+    front_wall = avg_front_sensor < 55 #different bcs its TOF, not IR
 
     return left_wall, front_wall, right_wall, back_wall
 
@@ -131,7 +128,7 @@ def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
     return maze_map
 
 
-''' add_walls_graph TODO init inside cells with all connections, not empty
+''' add_walls_graph_old OLD VERSION, not used anymore, but kept in code :).
 # @brief Substitute for add_wall for graphs.
 # Add connected cells according to detected walls.
 # Then remove connected cells in respective neighbouring fields according to detected walls.
@@ -143,103 +140,252 @@ def add_wall(maze_map, robot_position, robot_orientation, detected_wall):
 #
 # @retval maze_map: updated maze map.
 '''
-def add_walls_graph(maze_map, robot_position, robot_orientation, detected_walls):
-    walls = []
-    rows = maze_parameters.ROWS
+def add_walls_graph_old(maze_map, robot_position, robot_orientation, detected_walls):
     
+    rows = maze_parameters.ROWS
+
+    up = robot_position + rows
+    down = robot_position - rows
+    left = robot_position - 1
+    right = robot_position + 1
+
+    walls = []
+    
+    up_in = up in maze_map
+    down_in = down in maze_map
+    right_in = right in maze_map
+    left_in = left in maze_map
+
     for i in detected_walls.keys():
         if not detected_walls[i]: #wall absent - add connected cells in node
             match i:
                 case 'front wall':
                     if robot_orientation == direction.NORTH:
-                        walls.append(robot_position + rows)
+                        walls.append(up)
                     elif robot_orientation == direction.EAST:
-                        walls.append(robot_position + 1)
+                        walls.append(right)
                     elif robot_orientation == direction.SOUTH:
-                        walls.append(robot_position - rows)
+                        walls.append(down)
                     elif robot_orientation == direction.WEST:
-                        walls.append(robot_position - 1)
+                        walls.append(left)
                 case 'left wall':
                     if robot_orientation == direction.NORTH:
-                        walls.append(robot_position - 1)
+                        walls.append(left)
                     elif robot_orientation == direction.EAST:
-                        walls.append(robot_position + rows)
+                        walls.append(up)
                     elif robot_orientation == direction.SOUTH:
-                        walls.append(robot_position + 1)
+                        walls.append(right)
                     elif robot_orientation == direction.WEST:
-                        walls.append(robot_position - rows)
+                        walls.append(down)
                 case 'right wall':
                     if robot_orientation == direction.NORTH:
-                        walls.append(robot_position + 1)
+                        walls.append(right)
                     elif robot_orientation == direction.EAST:
-                        walls.append(robot_position - rows)
+                        walls.append(down)
                     elif robot_orientation == direction.SOUTH:
-                        walls.append(robot_position - 1)
+                        walls.append(left)
                     elif robot_orientation == direction.WEST:
-                        walls.append(robot_position + rows)         
+                        walls.append(up)         
                 case 'back wall':
                     if robot_orientation == direction.NORTH:
-                        walls.append(robot_position - rows)
+                        walls.append(down)
                     elif robot_orientation == direction.EAST:
-                        walls.append(robot_position - 1)
+                        walls.append(left)
                     elif robot_orientation == direction.SOUTH:
-                        walls.append(robot_position + rows)
+                        walls.append(up)
                     elif robot_orientation == direction.WEST:
-                        walls.append(robot_position + 1)
+                        walls.append(right)
         else: #wall present - remove connected cells in neighbour node
             match i:
                 case 'front wall':
                     if robot_orientation == direction.NORTH:
-                        if (robot_position + rows in maze_map) and (robot_position in maze_map[robot_position + rows]):
-                            maze_map[robot_position + rows].remove(robot_position)
+                        if (up_in) and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
                     elif robot_orientation == direction.EAST:
-                        if (robot_position + 1 in maze_map) and (robot_position in maze_map[robot_position + 1]):
-                            maze_map[robot_position + 1].remove(robot_position)
+                        if (right_in) and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
                     elif robot_orientation == direction.SOUTH:
-                        if (robot_position - rows in maze_map) and (robot_position in maze_map[robot_position - rows]):
-                            maze_map[robot_position - rows].remove(robot_position)
+                        if (down_in) and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
                     elif robot_orientation == direction.WEST:
-                        if (robot_position - 1 in maze_map) and (robot_position in maze_map[robot_position - 1]):
-                            maze_map[robot_position - 1].remove(robot_position)
+                        if (left_in) and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
                 case 'left wall':
                     if robot_orientation == direction.NORTH:
-                        if (robot_position - 1 in maze_map) and (robot_position in maze_map[robot_position - 1]):
-                            maze_map[robot_position - 1].remove(robot_position)
+                        if (left_in) and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
                     elif robot_orientation == direction.EAST:
-                        if (robot_position + rows in maze_map) and (robot_position in maze_map[robot_position + rows]):
-                            maze_map[robot_position + rows].remove(robot_position)
+                        if (up_in) and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
                     elif robot_orientation == direction.SOUTH:
-                        if (robot_position + 1 in maze_map) and (robot_position in maze_map[robot_position + 1]):
-                            maze_map[robot_position + 1].remove(robot_position)
+                        if (right_in) and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
                     elif robot_orientation == direction.WEST:
-                        if (robot_position - rows in maze_map) and (robot_position in maze_map[robot_position - rows]):
-                            maze_map[robot_position - rows].remove(robot_position)
+                        if (down_in) and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
                 case 'right wall':
                     if robot_orientation == direction.NORTH:
-                        if (robot_position + 1 in maze_map) and (robot_position in maze_map[robot_position + 1]):
-                            maze_map[robot_position + 1].remove(robot_position)
+                        if (right_in) and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
                     elif robot_orientation == direction.EAST:
-                        if (robot_position - rows in maze_map) and (robot_position in maze_map[robot_position - rows]):
-                            maze_map[robot_position - rows].remove(robot_position)
+                        if (down_in) and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
                     elif robot_orientation == direction.SOUTH:
-                        if (robot_position - 1 in maze_map) and (robot_position in maze_map[robot_position - 1]):
-                            maze_map[robot_position - 1].remove(robot_position)
+                        if (left_in) and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
                     elif robot_orientation == direction.WEST:
-                        if (robot_position + rows in maze_map) and (robot_position in maze_map[robot_position + rows]):
-                            maze_map[robot_position + rows].remove(robot_position)     
+                        if (up_in) and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)     
                 case 'back wall':
                     if robot_orientation == direction.NORTH:
-                        if (robot_position - rows in maze_map) and (robot_position in maze_map[robot_position - rows]):
-                            maze_map[robot_position - rows].remove(robot_position)
+                        if (down_in) and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
                     elif robot_orientation == direction.EAST:
-                        if (robot_position - 1 in maze_map) and (robot_position in maze_map[robot_position - 1]):
-                            maze_map[robot_position - 1].remove(robot_position)
+                        if (left_in) and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
                     elif robot_orientation == direction.SOUTH:
-                        if (robot_position + rows in maze_map) and (robot_position in maze_map[robot_position + rows]):
-                            maze_map[robot_position + rows].remove(robot_position)
+                        if (up_in) and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
                     elif robot_orientation == direction.WEST:
-                        if (robot_position + 1 in maze_map) and (robot_position in maze_map[robot_position + 1]):
-                            maze_map[robot_position + 1].remove(robot_position)
+                        if (right_in) and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
+
+    maze_map[robot_position] = walls
+
+    return maze_map
+
+
+''' add_walls_graph
+# @brief Substitute add_wall function for graphs.
+# Remove connected cells in robot position and respective neighbouring cells according to detected walls.
+#
+# @param maze_map: dictionary with current maze map with walls
+# @param robot_position: current robot position in maze
+# @param robot_orientation: current robot orientation in global directions
+# @param detected_walls: value which indicates on which side of robot wall was detected
+#
+# @retval maze_map: updated maze map.
+'''
+def add_walls_graph(maze_map, robot_position, robot_orientation, detected_walls):
+    
+    rows = maze_parameters.ROWS
+    
+    #neighbours positions
+    up = robot_position + rows
+    down = robot_position - rows
+    left = robot_position - 1
+    right = robot_position + 1
+
+    #Checks if neighours are in maze graph
+    up_in_maze = up in maze_map
+    down_in_maze = down in maze_map
+    right_in_maze = right in maze_map
+    left_in_maze = left in maze_map
+
+    walls = [up, down, left, right]
+    
+    for i in detected_walls.keys():
+        if detected_walls[i]: #wall present - remove connected cell in node and respective neighbour
+            match i:
+                case 'front wall':
+                    if robot_orientation == direction.NORTH:
+                        walls.remove(up)
+                        
+                        if up_in_maze and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
+
+                    elif robot_orientation == direction.EAST:
+                        walls.remove(right)
+                        
+                        if right_in_maze and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
+
+                    elif robot_orientation == direction.SOUTH:
+                        walls.remove(down)
+                        
+                        if down_in_maze and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
+
+                    elif robot_orientation == direction.WEST:
+                        walls.remove(left)
+                        
+                        if left_in_maze and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
+
+                case 'left wall':
+                    if robot_orientation == direction.NORTH:
+                        walls.remove(left)
+
+                        if left_in_maze and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
+
+                    elif robot_orientation == direction.EAST:
+                        walls.remove(up)
+
+                        if up_in_maze and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
+
+                    elif robot_orientation == direction.SOUTH:
+                        walls.remove(right)
+
+                        if right_in_maze and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
+
+                    elif robot_orientation == direction.WEST:
+                        walls.remove(down)
+
+                        if down_in_maze and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
+
+                case 'right wall':
+                    if robot_orientation == direction.NORTH:
+                        walls.remove(right)
+
+                        if right_in_maze and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
+
+                    elif robot_orientation == direction.EAST:
+                        walls.remove(down)
+
+                        if down_in_maze and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
+
+                    elif robot_orientation == direction.SOUTH:
+                        walls.remove(left)
+
+                        if left_in_maze and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
+
+                    elif robot_orientation == direction.WEST:
+                        walls.remove(up)   
+
+                        if up_in_maze and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)  
+
+                case 'back wall':
+                    if robot_orientation == direction.NORTH:
+                        walls.remove(down)
+
+                        if down_in_maze and (robot_position in maze_map[down]):
+                            maze_map[down].remove(robot_position)
+
+                    elif robot_orientation == direction.EAST:
+                        walls.remove(left)
+
+                        if left_in_maze and (robot_position in maze_map[left]):
+                            maze_map[left].remove(robot_position)
+
+                    elif robot_orientation == direction.SOUTH:
+                        walls.remove(up)
+
+                        if up_in_maze and (robot_position in maze_map[up]):
+                            maze_map[up].remove(robot_position)
+
+                    elif robot_orientation == direction.WEST:
+                        walls.remove(right)
+
+                        if right_in_maze and (robot_position in maze_map[right]):
+                            maze_map[right].remove(robot_position)
 
     maze_map[robot_position] = walls
 
@@ -275,13 +421,15 @@ def init_maze_map(maze_map):
 
 ''' init_maze_map_graph
 # @brief Initialize maze map with external walls as graph.
-# Border cells are initialized with respective walls
-# Inside cells are initialized as empty i.e. no connections
-# #params None
+# Border cells are initialized with respective walls.
+# Inside cells are initialized without any walls i.e. 4 connections.
+#
+# @params None
 #
 # @retv maze_map: Initialized maze map dictionary
 '''
 def init_maze_map_graph():
+
     maze_map = {}
     rows = maze_parameters.ROWS
     cols = maze_parameters.COLUMNS
@@ -313,8 +461,8 @@ def init_maze_map_graph():
     cell = 17
     #inside cells
     while True:
-        # maze_map[cell] = [cell + rows, cell + 1, cell - rows, cell - 1]
-        maze_map[cell] = []
+
+        maze_map[cell] = [cell + rows, cell + 1, cell - rows, cell - 1]
         
         end = (cell == (right_up_corner - 1 - rows))
         if end:
@@ -332,7 +480,7 @@ def init_maze_map_graph():
 
 ''' init_distance_map
 # @brief Initialize distance map with max values and 0 as target.
-# Target is 0 for floodfill algorythm working properly.
+# Target is 0 for floodfill algorithm working properly.
 #
 # @param distance: list which contains distance values
 # @param target: value which contains targetted cell

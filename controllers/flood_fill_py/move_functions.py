@@ -9,7 +9,7 @@ import map_functions as map_f
 
 
 ''' move_one_position_graph
-# @brief Executes robot movement to next position.
+# @brief Executes robot movement to next position. Used in graph algorithms.
 #
 # @param current_destination: variable with cell to which robot moves
 # @param robot_position: variable with current robot position
@@ -27,8 +27,8 @@ def move_one_position_graph(current_destination, robot_position, robot_orientati
     if front_wall:
         move_front_correct(tof, left_motor, right_motor, robot, ps)
     
-    robot_orientation =  move(robot_orientation, move_direction,\
-                                            robot, left_motor, right_motor, ps_left, ps_right, ps) #git
+    robot_orientation = drive(robot_orientation, move_direction,\
+                                            robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     robot_position = current_destination
     
@@ -36,7 +36,7 @@ def move_one_position_graph(current_destination, robot_position, robot_orientati
 
 
 ''' move_one_position
-# @brief Executes robot movement to next position.
+# @brief Executes robot movement to next position. Used in floodfill
 #
 # @param walls: variable with walls in current robot position
 # @param robot_position: variable with current robot position
@@ -55,15 +55,15 @@ def move_one_position(walls, distance, robot_position, robot_orientation, robot,
     if front_wall:
         move_front_correct(tof, left_motor, right_motor, robot, ps)
     
-    robot_orientation =  move(robot_orientation, move_direction,\
-                                            robot, left_motor, right_motor, ps_left, ps_right, ps) #git
+    robot_orientation = drive(robot_orientation, move_direction,\
+                                            robot, left_motor, right_motor, ps_left, ps_right, ps)
     
     robot_position = algorithm_f.change_position(robot_position, robot_orientation)
     
     return robot_position, robot_orientation
 
 
-''' move
+''' drive
 # @brief Drive robot motors etc. to actually move based on its orientation and move direction.
 #
 # @param robot_orientation: variable with actual robot orientation in global directions
@@ -72,7 +72,7 @@ def move_one_position(walls, distance, robot_position, robot_orientation, robot,
 
 # @retval robot_orientation: variable with updated robot orientation in global directions
 '''
-def move(robot_orientation, move_direction,\
+def drive(robot_orientation, move_direction,\
             robot, left_motor, right_motor, ps_left, ps_right, ps):
     if robot_orientation == move_direction: #move forward
         move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
@@ -80,22 +80,22 @@ def move(robot_orientation, move_direction,\
     elif (not( (robot_orientation == direction.WEST) and (move_direction == direction.NORTH) ) ) != \
         (not( (robot_orientation // 2) == move_direction) ):   #right, XOR, 'not' to avoid nonzero values
         
-        robot_orientation = change_orientation(robot_orientation, keys.right)
-        turn(robot, keys.right, left_motor, right_motor, ps_left, ps_right)
+        robot_orientation = change_orientation(robot_orientation, moves.right)
+        turn(robot, moves.right, left_motor, right_motor, ps_left, ps_right)
         move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     elif (not((robot_orientation == direction.NORTH) and (move_direction == direction.WEST))) != \
             (not( (robot_orientation * 2) == move_direction) ): #left, XOR
         
-        robot_orientation = change_orientation(robot_orientation, keys.left)
-        turn(robot, keys.left, left_motor, right_motor, ps_left, ps_right)
+        robot_orientation = change_orientation(robot_orientation, moves.left)
+        turn(robot, moves.left, left_motor, right_motor, ps_left, ps_right)
         move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
 
     elif ( not( (robot_orientation * 4) == move_direction)) != \
         (not( (robot_orientation // 4) == move_direction) ): #back, XOR
 
-        robot_orientation = change_orientation(robot_orientation, keys.back)
-        turn(robot, keys.back, left_motor, right_motor, ps_left, ps_right)
+        robot_orientation = change_orientation(robot_orientation, moves.back)
+        turn(robot, moves.back, left_motor, right_motor, ps_left, ps_right)
         move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps)
     
     return robot_orientation
@@ -108,7 +108,7 @@ def move(robot_orientation, move_direction,\
 # @param number_of_reads: variable which indicates how many times to read sensors
 #
 # @retval avg1_right_angle_sensor: variable with right angle sensor value
-# @retval avg6_left_angle_sensorL variable with left angle sensor value
+# @retval avg6_left_angle_sensor: variable with left angle sensor value
 # @retval left_wall: variable which indicates left wall presence
 # @retval right_wall: variable which indicates right wall presence
 '''
@@ -237,7 +237,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
 
     
 ''' move_1_tile
-# @brief Drive robot motors and set encoders position to move forward by distance
+# @brief Drive robot motors and set encoders position
 # to move forward by distance of exactly one tile.
 #
 # @params robot, left_motor, right_motor, ps_left, ps_right, ps: variables with robot devices
@@ -270,7 +270,7 @@ def move_1_tile(robot, left_motor, right_motor, ps_left, ps_right, ps):
 ''' move_front_correct
 # @brief Corrects robot position in reference to front wall.
 # Uses front angles IR sensors to straight up robot
-# and front tof sensors to correct distance.
+# and front tof sensor to correct distance.
 #
 # @params robot, left_motor, right_motor, tof, ps: variables with robot devices
 #
@@ -283,8 +283,6 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
 
     left = ps[7].getValue()
     right = ps[0].getValue()
-
-    desired_distance = 40.0
 
     if left < right:
         while left < right:
@@ -309,14 +307,18 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
                 print('sensor angle %.2f'% left, '%.2f'% right)
 
     front = tof.getValue()
-    
+    desired_distance = 40.0
+
     if front > desired_distance:
         while front > desired_distance:
 
             left_motor.setVelocity(robot_parameters.SPEED * 0.1)
             right_motor.setVelocity(robot_parameters.SPEED * 0.1)
+            
             robot.step(TIME_STEP)
+            
             front = tof.getValue()
+
             if mode_params.TESTING:
                 print('sensor tof %.2f'% front)
 
@@ -325,8 +327,11 @@ def move_front_correct(tof, left_motor, right_motor, robot, ps):
 
             left_motor.setVelocity(robot_parameters.SPEED * -0.1)
             right_motor.setVelocity(robot_parameters.SPEED * -0.1)
+            
             robot.step(TIME_STEP)
+            
             front = tof.getValue()
+
             if mode_params.TESTING:
                 print('sensor tof %.2f'% front)
 
@@ -354,7 +359,7 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
     right_motor.setVelocity(robot_parameters.SPEED * 0.33)
 
     match move_direction:
-        case keys.right: #right
+        case moves.right:
             left_wheel_revolutions += revolutions
             right_wheel_revolutions -= revolutions
             left_motor.setPosition(left_wheel_revolutions)
@@ -362,7 +367,7 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
             
             if mode_params.TESTING:
                 print('right')
-        case keys.left: #left
+        case moves.left:
             left_wheel_revolutions -= revolutions
             right_wheel_revolutions += revolutions
             left_motor.setPosition(left_wheel_revolutions)
@@ -370,7 +375,7 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
             
             if mode_params.TESTING:
                 print('left')
-        case keys.back: #back
+        case moves.back:
             revolutions *= 2
             left_wheel_revolutions += revolutions
             right_wheel_revolutions -= revolutions
@@ -391,14 +396,14 @@ def turn(robot, move_direction, left_motor, right_motor, ps_left, ps_right):
 # @param robot_position: variable with current robot position in maze
 # @param fork: dictionary with paths to each fork from current position
 # @param fork_number: variable with number of last used fork
-# @param fork_count: dictionary with number of unused routes for each fork
+# @param unused_routes: dictionary with number of unused routes for each fork
 # @param robot_orientation: variable with current robot orientation in maze
 # @params robot, ps, tof, left_motor, right_motor, ps_left, ps_right: variables with robot devices
 # @param path: list with actual path from start to current position
 #
 # @retv fork, fork_number, fork_count, path, robot_orientation, robot_position: updated values
 '''
-def move_back_DFS(destination, maze_map, robot_position, fork, fork_number, fork_count, robot_orientation,\
+def move_back_DFS(destination, maze_map, robot_position, fork, fork_number, unused_routes, robot_orientation,\
                robot, ps, tof, left_motor, right_motor, ps_left, ps_right, path):
     
     while destination not in maze_map[robot_position]:
@@ -410,11 +415,11 @@ def move_back_DFS(destination, maze_map, robot_position, fork, fork_number, fork
             fork[fork_number].pop()
             path.pop()
 
-        fork_count[fork_number] -= 1
-        if fork_count[fork_number] == 0:
+        unused_routes[fork_number] -= 1
+        if unused_routes[fork_number] == 0: #go back to previous fork
                 fork_number -= 1
 
-    return fork, fork_number, fork_count, path, robot_orientation, robot_position
+    return fork, fork_number, unused_routes, path, robot_orientation, robot_position
 
 
 ''' wait_move_end
