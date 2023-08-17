@@ -1,0 +1,661 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/apartment_structure/protos/Wall.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.6948074997504671 -0.7188728902929968 -0.0215477584054047 3.1875771768288175
+  position 1.1349965320560633 5.206997108954098 0.34591701068881997
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation 0 -0.05 0
+  rotation -1 0 0 1.5707996938995747
+  floorSize 1.92 1.92
+  floorTileSize 0.24 0.24
+}
+E-puck {
+  translation -0.9 -0.05 0.9
+  rotation -0.5773509358554485 0.5773509358554485 0.5773489358556708 2.0944
+  controller "<extern>"
+  version "2"
+}
+Wall {
+  translation -1.2225 0 0.84
+  name "wall(8)"
+  size 0.25 0.1 0.01
+}
+Wall {
+  translation -1.29717 0 0.443912
+  rotation 0 1 0 1.5707
+  name "2"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.119918 0 -4.8e-05
+  rotation 0 1 0 1.5707
+  name "2(6)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.119942 0 0.239952
+  rotation 0 1 0 1.5707
+  name "2(2)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.120094 0 -0.120025
+  rotation 0 1 0 1.5707
+  name "2(1)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.360094 0 -0.120001
+  rotation 0 1 0 1.5707
+  name "2(14)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.720106 0 -0.239965
+  rotation 0 1 0 1.5707
+  name "2(15)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.600082 0 2.3e-05
+  rotation 0 1 0 1.5707
+  name "2(20)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.600046 0 0.360023
+  rotation 0 1 0 1.5707
+  name "2(22)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.72007 0 0.120035
+  rotation 0 1 0 1.5707
+  name "2(23)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.720142 0 -0.599965
+  rotation 0 1 0 1.5707
+  name "2(16)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.480142 0 -0.599989
+  rotation 0 1 0 1.5707
+  name "2(17)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.599858 0 -0.600097
+  rotation 0 1 0 1.5707
+  name "2(18)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.839978 0 0.599879
+  rotation 5.18279e-07 -1 -6.75858e-07 -1.570705307179586
+  name "2(3)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.839942 5.67465e-08 0.239879
+  rotation 5.18279e-07 -1 -6.75858e-07 -1.570705307179586
+  name "2(10)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.359894 7.05562e-07 -0.240073
+  rotation 5.2787e-07 -1 -6.85448e-07 -1.570705307179586
+  name "2(13)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.600002 2.60399e-07 0.839903
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(4)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.239998 1.3104e-06 0.839987
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(5)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.240034 1.3698e-06 0.479987
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(7)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.119966 9.198e-07 0.479951
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(8)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.359954 6.396e-07 0.359927
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(9)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.35993 6.792e-07 0.119927
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(11)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.719882 3.084e-07 -0.360109
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(12)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.239858 9.48e-07 -0.600061
+  rotation -0.0017307608438666927 0.9999124875271167 -0.013115706394822147 -9.530717958661228e-05
+  name "2(19)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 9.4e-05 0 -0.120035
+  rotation 0 1 0 -9.530717958661228e-05
+  name "2(21)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -1.21717 0 0.44392
+  rotation 0 1 0 1.5707
+  name "3"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -0.18 0 0.84
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(1)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.66 0 0.840084
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(2)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.540012 0 0.720072
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(14)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.06012 0 -0.359976
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(5)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -0.419916 0 -2.4e-05
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(9)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.18006 0 0.240033
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(10)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.060072 0 0.120021
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(13)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.060048 0 0.360021
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(11)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.180144 0 -0.599964
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(6)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.060168 0 -0.839976
+  rotation 0 1 0 -9.530717958661228e-05
+  name "3(7)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.840042 0 0.420102
+  rotation 0 1 0 1.5707
+  name "3(3)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -0.59997 0 0.539958
+  rotation 0 1 0 1.5707
+  name "3(15)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -0.599922 0 0.059958
+  rotation 0 1 0 1.5707
+  name "3(16)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.24009 0 -0.059958
+  rotation 0 1 0 1.5707
+  name "3(12)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation 0.600126 0 -0.419922
+  rotation 0 1 0 1.5707
+  name "3(4)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -0.839898 0 -0.180066
+  rotation 0 1 0 1.5707
+  name "3(8)"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -1.15717 0 0.443926
+  rotation 0 1 0 1.5707
+  name "4"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -0.72 0 0.24
+  rotation 0 1 0 1.5707
+  name "4(1)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -0.719916 0 -0.6
+  rotation 0 1 0 1.5707
+  name "4(2)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -0.239952 0 -0.239952
+  rotation 0 1 0 1.5707
+  name "4(3)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation 0.840048 0 -0.239844
+  rotation 0 1 0 1.5707
+  name "4(5)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation 0.480036 0 -0.11988
+  rotation 0 1 0 1.5707
+  name "4(7)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation 0.479988 0 0.36012
+  rotation 0 1 0 1.5707
+  name "4(8)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation 0.719976 0 0.480144
+  rotation 0 1 0 1.5707
+  name "4(9)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -0.36 0 0.240036
+  rotation 0 1 0 -9.530717958661228e-05
+  name "4(4)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation 0.600108 0 -0.839868
+  rotation 0 1 0 -9.530717958661228e-05
+  name "4(6)"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -1.09717 0 0.443932
+  rotation 0 1 0 1.5707
+  name "5"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation -0.18 0 0.72
+  rotation 0 1 0 -9.530717958661228e-05
+  name "5(1)"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation 0.180012 0 0.600036
+  rotation 0 1 0 -9.530717958661228e-05
+  name "5(2)"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation 0.06012 0 -0.479976
+  rotation 0 1 0 -9.530717958661228e-05
+  name "5(3)"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation -0.179856 0 -0.72
+  rotation 0 1 0 -9.530717958661228e-05
+  name "5(4)"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation -0.539844 0 -0.840036
+  rotation 0 1 0 -9.530717958661228e-05
+  name "5(5)"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation -1.03717 0 0.443938
+  rotation 0 1 0 1.5707
+  name "6"
+  size 0.72 0.1 0.01
+}
+Wall {
+  translation -1.11994 0 -0.480148
+  rotation 0 1 0 1.5707
+  name "6(6)"
+  size 0.72 0.1 0.01
+}
+Wall {
+  translation -1.35717 0 0.443906
+  rotation 0 1 0 1.5707
+  name "1"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.84 0 0.9
+  rotation 0 1 0 1.5707
+  name "1(1)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.779982 0 0.720006
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(2)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.779958 0 0.480006
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(24)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.77991 0 5.99995e-06
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(26)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.65997 0 0.600018
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(22)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.659898 0 -0.119982
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(25)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.29997 0 0.600054
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(23)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.900018 0 0.720174
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(21)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.900078 0 0.120174
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(27)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.78009 0 0.000162
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(28)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.660102 0 -0.119849
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(29)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.059886 0 -0.239921
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(30)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.420126 0 -0.359873
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(31)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.300162 0 -0.719885
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(36)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.540162 0 -0.719861
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(37)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.419874 0 -0.359957
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(32)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.539886 0 -0.239969
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(33)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.53985 0 -0.599969
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(34)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.899838 0 -0.720005
+  rotation 0 1 0 -9.530717958661228e-05
+  name "1(35)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.719988 0 0.780012
+  rotation 0 1 0 1.5707
+  name "1(20)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.719892 0 -0.179988
+  rotation 0 1 0 1.5707
+  name "1(12)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.479892 0 -0.179964
+  rotation 0 1 0 1.5707
+  name "1(13)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.479868 0 -0.419964
+  rotation 0 1 0 1.5707
+  name "1(15)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.359856 0 -0.539952
+  rotation 0 1 0 1.5707
+  name "1(17)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.839856 0 -0.54
+  rotation 0 1 0 1.5707
+  name "1(18)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.840156 0 -0.659832
+  rotation 0 1 0 1.5707
+  name "1(19)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.360132 0 -0.41988
+  rotation 0 1 0 1.5707
+  name "1(16)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.360168 0 -0.77988
+  rotation 0 1 0 1.5707
+  name "1(38)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.59988 0 -0.299976
+  rotation 0 1 0 1.5707
+  name "1(14)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.479964 0 0.540036
+  rotation 0 1 0 1.5707
+  name "1(6)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.359952 0 0.420048
+  rotation 0 1 0 1.5707
+  name "1(9)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.360048 0 0.42012
+  rotation 0 1 0 1.5707
+  name "1(10)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.360072 0 0.18012
+  rotation 0 1 0 1.5707
+  name "1(11)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.240024 0 0.660108
+  rotation 0 1 0 1.5707
+  name "1(7)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.600024 0 0.660144
+  rotation 0 1 0 1.5707
+  name "1(8)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.479988 0 0.780036
+  rotation 0 1 0 1.5707
+  name "1(3)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.120012 0 0.780096
+  rotation 0 1 0 1.5707
+  name "1(4)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation 0.360012 0 0.78012
+  rotation 0 1 0 1.5707
+  name "1(5)"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.960001 0 0.0041413
+  rotation 0 1 0 1.5707
+  name "16"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0.959999 0 0.0036237
+  rotation 0 1 0 1.5707
+  name "16(1)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0 0 0.96
+  name "16(2)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0 0 -0.96
+  name "16(3)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation -2.05 0 0.74
+  name "10"
+  size 1.2 0.1 0.01
+}
+Wall {
+  translation -2.03 -4.92761e-06 0.715
+  name "11"
+  size 1.32 0.1 0.01
+}
+Wall {
+  translation -2.03 -4.92761e-06 0.775
+  name "8"
+  size 0.96 0.1 0.01
+}

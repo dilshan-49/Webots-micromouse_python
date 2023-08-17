@@ -1,0 +1,139 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/apartment_structure/protos/Wall.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.6943670768669369 -0.719004071489424 -0.029791068206702888 3.1651101282675933
+  position 0.1643135185264284 5.49767427202378 0.44168759666672447
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation 0 -0.05 0
+  rotation -1 0 0 1.5707996938995747
+  floorSize 1.92 1.92
+  floorTileSize 0.24 0.24
+}
+E-puck {
+  translation -0.9 -0.05 0.9
+  rotation -0.5773509358554485 0.5773509358554485 0.5773489358556708 2.0944
+  controller "<extern>"
+  version "2"
+}
+Wall {
+  translation -1.2225 0 0.84
+  name "wall(8)"
+  size 0.25 0.1 0.01
+}
+Wall {
+  translation -1.29717 0 0.443912
+  rotation 0 1 0 1.5707
+  name "2"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.119918 0 -4.8e-05
+  rotation 0 1 0 1.5707
+  name "2(6)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 0.120082 0 -2.48808e-05
+  rotation 0 1 0 1.5707
+  name "2(1)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -0.840002 0 0.839879
+  rotation 0 1 0 1.5707
+  name "2(3)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation 9.4e-05 0 -0.120035
+  rotation 0 1 0 -9.530717958661228e-05
+  name "2(21)"
+  size 0.24 0.1 0.01
+}
+Wall {
+  translation -1.21717 0 0.44392
+  rotation 0 1 0 1.5707
+  name "3"
+  size 0.36 0.1 0.01
+}
+Wall {
+  translation -1.15717 0 0.443926
+  rotation 0 1 0 1.5707
+  name "4"
+  size 0.48 0.1 0.01
+}
+Wall {
+  translation -1.09717 0 0.443932
+  rotation 0 1 0 1.5707
+  name "5"
+  size 0.6 0.1 0.01
+}
+Wall {
+  translation -1.03717 0 0.443938
+  rotation 0 1 0 1.5707
+  name "6"
+  size 0.72 0.1 0.01
+}
+Wall {
+  translation -0.83994 0 -0.48012
+  rotation 0 1 0 1.5707
+  name "6(6)"
+  size 0.72 0.1 0.01
+}
+Wall {
+  translation -1.35717 0 0.443906
+  rotation 0 1 0 1.5707
+  name "1"
+  size 0.12 0.1 0.01
+}
+Wall {
+  translation -0.960001 0 0.0041413
+  rotation 0 1 0 1.5707
+  name "16"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0.959999 0 0.0036237
+  rotation 0 1 0 1.5707
+  name "16(1)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0 0 0.96
+  name "16(2)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation 0 0 -0.96
+  name "16(3)"
+  size 1.92 0.1 0.01
+}
+Wall {
+  translation -2.05 0 0.74
+  name "10"
+  size 1.2 0.1 0.01
+}
+Wall {
+  translation -2.03 -4.92761e-06 0.715
+  name "11"
+  size 1.32 0.1 0.01
+}
+Wall {
+  translation -2.03 -4.92761e-06 0.775
+  name "8"
+  size 0.96 0.1 0.01
+}
