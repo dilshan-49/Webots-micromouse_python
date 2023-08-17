@@ -163,7 +163,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
         previous_error = 0.00
         error_integral = 0.00
         P = 0.005  #0.005
-        I = 0.0 #0.0005
+        I = 0.0004 #0.0005  0.0001
         D = 0.0005 # 0.0002
         Middle = 75
         

@@ -3,14 +3,17 @@ from collections import namedtuple
 # START Values to change to run program in different modes etc. START
 
 # 1- search, 2 - speeedrun
-MODE = 1                    
+MODE = 2                
 # 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS),
 # 4 - breadth first search (BFS), 5 - A*, 6 - A* modified
 ALGORITHM = 6           
 # 1- print sensors values etc. for testing, 0 - no prints
 TESTING = 0
 
-#only for floodfill
+# 1 - Forbot, 2 - Taiwan2015, 3 - Apec2010, 4 - UK2016, 5 - Higashi2017_mod
+MAZE_LAYOUT = 3
+
+#only for floodfill WON'T WORK WITH MAZES WHERE THERE ARE UNAVAILABLE CELLS
 # True - discover whole maze (guaranteed shortest path, but long searching time),
 # False - make 2 runs: start -> target and target -> start (shorter searching time, but shortest path not guaranteed)
 WHOLE_SEARCH = False 
@@ -36,12 +39,22 @@ BFS = 4
 A_STAR = 5
 A_STAR_MOD = 6
 
+#Maze Layout
+FORBOT = 1
+TAIWAN_2015 = 2
+APEC_2010 = 3
+UK_2016 = 4
+HIGASHI_2017 = 5
+
 # Walls values according to direction (NORTH is not always forward etc.)
 WEST =      1    #  00000001 
 SOUTH =     2    #  00000010 
 EAST =      4    #  00000100 
 NORTH =     8    #  00001000
-
+# NORTH =    1    #  00000001 
+# EAST =     2    #  00000010 
+# SOUTH =    4    #  00000100 
+# WEST =     8    #  00001000
 # Maze params
 ROWS =  16
 COLUMNS = 16
@@ -66,8 +79,11 @@ direction = Direction(WEST, SOUTH, EAST, NORTH)
 Robot_parameters = namedtuple('robot_parameters','AXLE WHEEL SPEED')
 robot_parameters = Robot_parameters(AXLE, WHEEL, SPEED)
 
-Mode_params = namedtuple('mode_params','SEARCH SPEEDRUN MODE TESTING WHOLE_SEARCH ALGORITHM')
-mode_params = Mode_params(SEARCH, SPEEDRUN, MODE, TESTING, WHOLE_SEARCH, ALGORITHM)
+Mode_params = namedtuple('mode_params','SEARCH SPEEDRUN MODE TESTING WHOLE_SEARCH ALGORITHM MAZE_LAYOUT')
+mode_params = Mode_params(SEARCH, SPEEDRUN, MODE, TESTING, WHOLE_SEARCH, ALGORITHM, MAZE_LAYOUT)
+
+Maze = namedtuple('maze','FORBOT TAIWAN_2015 APEC_2010 UK_2016 HIGASHI_2017')
+maze = Maze(FORBOT, TAIWAN_2015, APEC_2010, UK_2016, HIGASHI_2017)
 
 Algorithms = namedtuple('algorithms','KEYBOARD FLOODFILL DFS BFS A_STAR A_STAR_MOD')
 algorithms = Algorithms(KEYBOARD, FLOODFILL, DFS, BFS, A_STAR, A_STAR_MOD)

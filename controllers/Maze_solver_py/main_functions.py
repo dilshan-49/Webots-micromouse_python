@@ -40,8 +40,7 @@ def floodfill_main(robot):
 
     var.maze_map_global = maze_map
 
-    path_file = 'Results/floodfill_path.pkl'
-    maze_file = 'Results/floodfill_maze.pkl'
+    path_file, maze_file = algorithm_f.choose_file_path()
 
     while robot.step(TIME_STEP) != -1:
             
@@ -98,8 +97,14 @@ def floodfill_main(robot):
                     if var.searching_end:
                         print('Target reached')
                         print('Searching time: %.2f'% robot.getTime(),'s')
-                        algorithm_f.write_file(path_file, distance)
                         algorithm_f.write_file(maze_file, maze_map)
+                        for i in range(0, maze_parameters.MAZE_SIZE): #to make sure path will use only visited cells
+                            if (maze_map[i] & maze_parameters.VISITED) != maze_parameters.VISITED:
+                                maze_map[i] |= 15
+                        target = 136
+                        distance = map_f.init_distance_map(distance, target) #reset path
+                        distance = algorithm_f.floodfill(maze_map, distance) #path
+                        algorithm_f.write_file(path_file, distance)
                         input("press any key to end")
                         exit(0)
                     
@@ -166,8 +171,7 @@ def DFS_main(robot):
 
     var.maze_map_global = maze_map
 
-    path_file = 'Results/DFS_path.pkl'
-    maze_file = 'Results/DFS_maze.pkl'
+    path_file, maze_file = algorithm_f.choose_file_path()
 
     #dfs vars
     fork_number = -1
@@ -298,7 +302,7 @@ def DFS_main(robot):
 # It was adjusted for robot movement. BFS is a horizontal searching through graph
 # by going by each 'level' of nodes. To avoid unnnecesary back-tracking,
 # only forks are treated as 'levels',  which means that robot will go back
-# only when it moves to new fork or dead-end. Still guarantees shortest path.
+# only when it moves to new fork or dead-end. Because of that it doesn't guarantees shortest path.
 #
 # @param robot: object with robot instance
 #
@@ -317,8 +321,7 @@ def BFS_main(robot):
     for i in range (256):
         maze_map_searched[i] = []
 
-    path_file = 'Results/BFS_path.pkl'
-    maze_file = 'Results/BFS_maze.pkl'
+    path_file, maze_file = algorithm_f.choose_file_path()
 
     #bfs vars
     visited = []
@@ -447,7 +450,8 @@ def BFS_main(robot):
 
 
 ''' A_star_main
-# @brief Main program for A* algorithm controller.
+# @brief Main program for A* algorithm controller. 
+# Guarantees shortest path, but very long search time.
 #
 # @param robot: object with robot instance
 #
@@ -466,8 +470,7 @@ def A_star_main(robot):
     for i in range (256):
         maze_map_searched[i] = []
 
-    path_file = 'Results/A_star_path.pkl'
-    maze_file = 'Results/A_star_maze.pkl'
+    path_file, maze_file = algorithm_f.choose_file_path()
 
     #A* vars
     open = [] #list of unvisited nodes
@@ -615,8 +618,7 @@ def A_star_main_modified(robot):
         maze_map_searched[i] = []
 
     
-    path_file = 'Results/A_star_mod_path.pkl'
-    maze_file = 'Results/A_star_mod_maze.pkl'
+    path_file, maze_file = algorithm_f.choose_file_path()
 
     #A* vars
     open = [] #list of unvisited nodes

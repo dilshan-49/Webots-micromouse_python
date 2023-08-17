@@ -326,10 +326,11 @@ def update_neighbours_costs(neighbours, open, closed, parent, cost, current_posi
         if neighbour in closed:
             continue
 
-        new_cost = cost[current_position][0] + calc_cost(current_position, neighbour)
+        new_move_to_neighbour_cost = cost[current_position][0] + calc_cost(current_position, neighbour)
 
-        if (neighbour not in open) or new_cost < (cost[neighbour][0] + cost[neighbour][1]):
-            neighbour_Gcost = new_cost 
+        # if (neighbour not in open) or new_cost < (cost[neighbour][0] + cost[neighbour][1]):
+        if (neighbour not in open) or new_move_to_neighbour_cost < cost[neighbour][0]:
+            neighbour_Gcost = new_move_to_neighbour_cost 
             neighbour_Hcost = calc_cost(neighbour, maze_parameters.TARGET_CELL)
             cost[neighbour] = [neighbour_Gcost, neighbour_Hcost]
             parent[neighbour] = current_position
@@ -554,15 +555,21 @@ def change_target(maze_map, robot_position, distance, target):
     
     match mode_params.WHOLE_SEARCH:
         case False:
+            distance = init_distance_map(distance, target) #reset path
+            distance = floodfill(maze_map, distance) #path
+            
+            #fill unvisited cells with 4 walls to verify if the shortest path was find
+            shortest_path = check_distance(distance, maze_map, target)
+
             if robot_position == 136:
 
                 maze_map = mark_center(maze_map)
 
-                distance = init_distance_map(distance, target) #reset path
-                distance = floodfill(maze_map, distance) #path
+                # distance = init_distance_map(distance, target) #reset path
+                # distance = floodfill(maze_map, distance) #path
                 
-                #fill unvisited cells with 4 walls to verify if the shortest path was find
-                shortest_path = check_distance(distance, maze_map, target)
+                # #fill unvisited cells with 4 walls to verify if the shortest path was find
+                # shortest_path = check_distance(distance, maze_map, target)
 
                 if shortest_path:
                     print("This is the shortest/ one of the shortest paths")
@@ -572,14 +579,14 @@ def change_target(maze_map, robot_position, distance, target):
                     target = 0
 
             elif robot_position == 0:
-                shortest_path = check_distance(distance, maze_map, target)
+                # shortest_path = check_distance(distance, maze_map, target)
                 
                 if shortest_path:
                     print("This is the shortest/ one of the shortest paths")
+                    var.searching_end = True
                 else:
                     print("There might be a shorter path, keep going")
                 
-                var.searching_end = True
                 target = 136
         case True:
             search = True
@@ -688,7 +695,10 @@ def check_distance(distance, maze_map, target):
     
     distance_check = init_distance_map(distance_check, target) #reset path
     distance_check = floodfill(maze_map_check, distance_check) #path
-    shortest_path = (distance[0] >= distance_check[0]) #could be just equal
+    if target == 136:
+        shortest_path = (distance[0] >= distance_check[0]) #could be just equal'
+    elif target == 0:
+        shortest_path = (distance[136] >= distance_check[136]) #could be just equal'
 
     return shortest_path
 
@@ -705,8 +715,8 @@ def check_distance(distance, maze_map, target):
 def calc_cost(start, target):
     
     #index to matrix/grid
-    point1 = [start % 4, start // 4] 
-    point2 = [target % 4, target // 4]
+    point1 = [start % 16, start // 16] 
+    point2 = [target % 16, target // 16]
 
     distance = 0
     for x1, x2 in zip(point1, point2):
@@ -715,26 +725,6 @@ def calc_cost(start, target):
         distance += absolute_difference
 
     return distance
-
-
-''' get_path_A_star 
-# @brief Works only for pure A* algorithm. Not used in any main programs anymore.
-# Creates final path from start to target with a use of parents list.
-#
-# @param robot_position: variable with current robot position in maze
-# @param parent: list with parent nodes used to create path
-#
-# @retval path: list with path to target
-'''
-# def get_path_A_star(robot_position, parent):
-#     path = []
-#     while robot_position != maze_parameters.START_CELL:
-#         path.append(robot_position)
-#         robot_position = parent[robot_position]
-    
-#     path.reverse()
-
-#     return path
 
 
 ''' read_file
@@ -772,3 +762,103 @@ def write_file(file_name, values):
     if file == None:
         print('ERROR')
         exit(1)
+
+
+''' choose_file_path
+# @brief Choose apropiete directory and file name to save results
+#
+# @param None
+#
+# @retval path_file, maze_file: Appropriate files directory and names
+'''
+def choose_file_path():
+
+    match mode_params.MAZE_LAYOUT:
+        case maze.FORBOT:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Forbot/floodfill_path.pkl'
+                    maze_file = 'Results/Forbot/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Forbot/DFS_path.pkl'
+                    maze_file = 'Results/Forbot/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Forbot/BFS_path.pkl'
+                    maze_file = 'Results/Forbot/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Forbot/A_star_path.pkl'
+                    maze_file = 'Results/Forbot/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Forbot/A_star_mod_path.pkl'
+                    maze_file = 'Results/Forbot/A_star_mod_maze.pkl'
+        case maze.TAIWAN_2015:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Taiwan2015/floodfill_path.pkl'
+                    maze_file = 'Results/Taiwan2015/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Taiwan2015/DFS_path.pkl'
+                    maze_file = 'Results/Taiwan2015/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Taiwan2015/BFS_path.pkl'
+                    maze_file = 'Results/Taiwan2015/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Taiwan2015/A_star_path.pkl'
+                    maze_file = 'Results/Taiwan2015/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Taiwan2015/A_star_mod_path.pkl'
+                    maze_file = 'Results/Taiwan2015/A_star_mod_maze.pkl'
+        case maze.APEC_2010:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Apec2010/floodfill_path.pkl'
+                    maze_file = 'Results/Apec2010/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Apec2010/DFS_path.pkl'
+                    maze_file = 'Results/Apec2010/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Apec2010/BFS_path.pkl'
+                    maze_file = 'Results/Apec2010/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Apec2010/A_star_path.pkl'
+                    maze_file = 'Results/Apec2010/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Apec2010/A_star_mod_path.pkl'
+                    maze_file = 'Results/Apec2010/A_star_mod_maze.pkl'
+        case maze.UK_2016:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/UK2016/floodfill_path.pkl'
+                    maze_file = 'Results/UK2016/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/UK2016/DFS_path.pkl'
+                    maze_file = 'Results/UK2016/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/UK2016/BFS_path.pkl'
+                    maze_file = 'Results/UK2016/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/UK2016/A_star_path.pkl'
+                    maze_file = 'Results/UK2016/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/UK2016/A_star_mod_path.pkl'
+                    maze_file = 'Results/UK2016/A_star_mod_maze.pkl'
+        case maze.HIGASHI_2017:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Higashi2017_mod/floodfill_path.pkl'
+                    maze_file = 'Results/Higashi2017_mod/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Higashi2017_mod/DFS_path.pkl'
+                    maze_file = 'Results/Higashi2017_mod/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Higashi2017_mod/BFS_path.pkl'
+                    maze_file = 'Results/Higashi2017_mod/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Higashi2017_mod/A_star_path.pkl'
+                    maze_file = 'Results/Higashi2017_mod/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Higashi2017_mod/A_star_mod_path.pkl'
+                    maze_file = 'Results/Higashi2017_mod/A_star_mod_maze.pkl'
+    
+    return path_file, maze_file
+

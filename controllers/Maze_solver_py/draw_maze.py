@@ -14,7 +14,7 @@ from Constants import *
 # @retval maze: object with maze walls
 '''
 def init_maze(maze_map, distance, size):
-    setup(1020, 1020, 1040, 360) #size and position on screen
+    setup(1020, 1020, 1500, 160) #size and position on screen
     maze = Turtle()
     maze.hideturtle()
     tracer(False)
