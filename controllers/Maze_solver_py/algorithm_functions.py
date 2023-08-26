@@ -859,6 +859,91 @@ def choose_file_path():
                 case algorithms.A_STAR_MOD:
                     path_file = 'Results/Higashi2017_mod/A_star_mod_path.pkl'
                     maze_file = 'Results/Higashi2017_mod/A_star_mod_maze.pkl'
-    
+        case maze.JAPAN_2013EQ:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Japan2013eq/floodfill_path.pkl'
+                    maze_file = 'Results/Japan2013eq/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Japan2013eq/DFS_path.pkl'
+                    maze_file = 'Results/Japan2013eq/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Japan2013eq/BFS_path.pkl'
+                    maze_file = 'Results/Japan2013eq/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Japan2013eq/A_star_path.pkl'
+                    maze_file = 'Results/Japan2013eq/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Japan2013eq/A_star_mod_path.pkl'
+                    maze_file = 'Results/Japan2013eq/A_star_mod_maze.pkl'
+        case maze.KANKOU_2003:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Kankou2003/floodfill_path.pkl'
+                    maze_file = 'Results/Kankou2003/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Kankou2003/DFS_path.pkl'
+                    maze_file = 'Results/Kankou2003/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Kankou2003/BFS_path.pkl'
+                    maze_file = 'Results/Kankou2003/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Kankou2003/A_star_path.pkl'
+                    maze_file = 'Results/Kankou2003/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Kankou2003/A_star_mod_path.pkl'
+                    maze_file = 'Results/Kankou2003/A_star_mod_maze.pkl'
+        case maze.JAPAN_2011:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Japan2011/floodfill_path.pkl'
+                    maze_file = 'Results/Japan2011/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Japan2011/DFS_path.pkl'
+                    maze_file = 'Results/Japan2011/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Japan2011/BFS_path.pkl'
+                    maze_file = 'Results/Japan2011/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Japan2011/A_star_path.pkl'
+                    maze_file = 'Results/Japan2011/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Japan2011/A_star_mod_path.pkl'
+                    maze_file = 'Results/Japan2011/A_star_mod_maze.pkl'
+        case maze.JAPAN_1987:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Japan1987/floodfill_path.pkl'
+                    maze_file = 'Results/Japan1987/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Japan1987/DFS_path.pkl'
+                    maze_file = 'Results/Japan1987/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Japan1987/BFS_path.pkl'
+                    maze_file = 'Results/Japan1987/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Japan1987/A_star_path.pkl'
+                    maze_file = 'Results/Japan1987/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Japan1987/A_star_mod_path.pkl'
+                    maze_file = 'Results/Japan1987/A_star_mod_maze.pkl'
+        case maze.KOR_88:
+            match mode_params.ALGORITHM:
+                case algorithms.FLOODFILL:
+                    path_file = 'Results/Kor88/floodfill_path.pkl'
+                    maze_file = 'Results/Kor88/floodfill_maze.pkl'
+                case algorithms.DFS:
+                    path_file = 'Results/Kor88/DFS_path.pkl'
+                    maze_file = 'Results/Kor88/DFS_maze.pkl'
+                case algorithms.BFS:
+                    path_file = 'Results/Kor88/BFS_path.pkl'
+                    maze_file = 'Results/Kor88/BFS_maze.pkl'
+                case algorithms.A_STAR:
+                    path_file = 'Results/Kor88/A_star_path.pkl'
+                    maze_file = 'Results/Kor88/A_star_maze.pkl'
+                case algorithms.A_STAR_MOD:
+                    path_file = 'Results/Kor88/A_star_mod_path.pkl'
+                    maze_file = 'Results/Kor88/A_star_mod_maze.pkl'
+
     return path_file, maze_file
 

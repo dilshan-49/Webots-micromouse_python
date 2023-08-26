@@ -163,7 +163,7 @@ def PID_correction(left_motor, right_motor, robot, ps, ps_left, ps_right):
         previous_error = 0.00
         error_integral = 0.00
         P = 0.005  #0.005
-        I = 0.0004 #0.0005  0.0001
+        I = 0.0008 #0.0005  0.0001
         D = 0.0005 # 0.0002
         Middle = 75
         
@@ -417,7 +417,8 @@ def move_back_DFS(destination, maze_map, robot_position, fork, fork_number, unus
 
         unused_routes[fork_number] -= 1
         if unused_routes[fork_number] == 0: #go back to previous fork
-                fork_number -= 1
+                if fork_number != 0:
+                    fork_number -= 1
 
     return fork, fork_number, unused_routes, path, robot_orientation, robot_position
 

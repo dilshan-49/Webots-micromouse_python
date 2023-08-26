@@ -262,6 +262,7 @@ def DFS_main(robot):
             if start:
                 path = algorithm_f.read_file(path_file)
                 path.reverse()
+                print(len(path))
                 path.pop() #remove start cell
                 
                 maze_map = algorithm_f.read_file(maze_file)
@@ -415,7 +416,7 @@ def BFS_main(robot):
 
             if start:
                 path = algorithm_f.read_file(path_file)
-                
+                print(len(path))
                 maze_map = algorithm_f.read_file(maze_file)
                 var.maze_map_global = maze_map
                 
@@ -710,7 +711,7 @@ def A_star_main_modified(robot):
 
             if start:
                 path = algorithm_f.read_file(path_file)
-                
+                print(len(path))
                 maze_map = algorithm_f.read_file(maze_file)
                 var.maze_map_global = maze_map
                 
