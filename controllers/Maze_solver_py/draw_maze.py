@@ -44,7 +44,7 @@ def init_maze(maze_map, distance, size):
     if mode_params.ALGORITHM == algorithms.FLOODFILL:
         for y in range(-480, 480, size):
             for x in range(-480, 480, size):
-                write_distance(x, y, distance[i], text)
+                write_distance(x, y, distance[i], text) # write initial distance values
                 if maze_map[i] < 64: #unvisited cell
                     draw_wall(maze_map[i], x, y, size, maze)
                 else:
@@ -75,7 +75,7 @@ def draw_maze(maze_map, distance):
     size = 60
 
     text, maze = init_maze(maze_map, distance, size)
- 
+
     circles = Turtle()
     circles.pencolor("red")
     circles.hideturtle()
@@ -372,7 +372,6 @@ def draw_wall(maze_map, x, y, size, t):
             line(x + size, y, x + size, y + size, t)
             line(x, y, x + size, y, t)
             line(x, y, x, y + size, t)
-            print('WTF POLE %i' % maze_map )
 
 
 ''' graph_walls_convert 

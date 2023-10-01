@@ -1,0 +1,46 @@
+1.Forbot:
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005 
+2.Taiwan2015
+        P = 0.005  
+        I = 0.0005, A* (both) = 0.001
+        D = 0.0005, A* (both) = 0.0008 
+3.Apec2010
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005 
+Maze divided to 2 parts which highlight  A* and BFS problem.
+4.UK2016
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005
+2 shortest path min.
+5.Higashi2017
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005
+One shortest path, but with many mini branches
+Maze divided to 2 parts which highlight  A* and BFS problem.
+6.Japan2013
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005
+2 shortest path min.
+7.Kankou2003
+        P = 0.005  
+        I = 0.0002
+        D = 0.0005
+2 shortest path min.
+8.Japan2011
+        P = 0.005  
+        I = 0.0002 BFS = 0.0005, A* = 0.002
+        D = 0.0005 A* = 0,0008
+9.Japan1987
+        P = 0.005  
+        I = 0.0002 A* = 0.002
+        D = 0.0005 A* = 0,0008
+10.kor88:
+        P = 0.005  
+        I = 0.0002 A* = 0.0008
+        D = 0.0005 

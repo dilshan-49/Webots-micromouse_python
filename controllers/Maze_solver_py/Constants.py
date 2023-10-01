@@ -3,16 +3,18 @@ from collections import namedtuple
 # START Values to change to run program in different modes etc. START
 
 # 1- search, 2 - speeedrun
-MODE = 2                
+MODE = 1                
+
 # 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS),
 # 4 - breadth first search (BFS), 5 - A*, 6 - A* modified
-ALGORITHM = 5           
-# 1- print sensors values etc. for testing, 0 - no prints
-TESTING = 0
+ALGORITHM = 2          
 
 # 1 - Forbot, 2 - Taiwan2015, 3 - Apec2010, 4 - UK2016, 5 - Higashi2017_mod,
 # 6 - Japan2013eq, 7 - Kankou2003, 8 - Japan2011, 9 - Japan1987, 10 - Kor88
-MAZE_LAYOUT = 10
+MAZE_LAYOUT = 8
+
+# 1- print sensors values etc. for testing, 0 - no prints
+TESTING = 0
 
 #only for floodfill WON'T WORK WITH MAZES WHERE THERE ARE UNAVAILABLE CELLS
 # True - discover whole maze (guaranteed shortest path, but long searching time),
@@ -67,7 +69,6 @@ COLUMNS = 16
 MAZE_SIZE = ROWS * COLUMNS
 START_CELL = 0
 VISITED = 64
-
 
 # Sets correct target for used mode
 if MODE == 2:

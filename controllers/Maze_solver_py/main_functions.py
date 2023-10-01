@@ -19,10 +19,9 @@ import var
 # which weren't visited are assumed with 4 walls. If path from actually discovered
 # maze has same length as 2nd one - the shortest path was founded. If not robot makes
 # second run - from target to start cell to search some of unvisited part of maze.
-# It still doesn't guarantee the shortest path, but most likely it will and
-# in worst case searched path propably won't be much worse.
-# 2. With searching whole maze - guarantees shortest path, but might be much longer 
-# i.e. not worth to do in competition. TODO change whole search to work as first approach and at the end check rest cells, now inefficient.
+# Process reapeat's until shortest path is found.
+# 2. With searching whole maze - WORKS only for mazes, where ALL cells are accessible.
+# Unrecommended to use.
 #
 # @param robot: object with robot instance
 #
@@ -479,7 +478,7 @@ def A_star_main(robot):
     cost = {}
     parent = {} #propably not needed anymore
     path = []
-    
+    time_sum = 0.0
     current_destination = robot_position
     cost[robot_position] = [0,  algorithm_f.calc_cost(robot_position, target)]
     parent[robot_position] = robot_position
@@ -522,7 +521,6 @@ def A_star_main(robot):
                 if robot_position == target:
                     print('Target reached')
                     print('Searching time: %.2f'% robot.getTime(),'s')
-                    # path = algorithm_f.get_path_A_star(robot_position, parent)
                     path = algorithm_f.get_path_A_star(maze_map_searched, maze_parameters.START_CELL, target)
                     var.main_event.wait()
                     var.main_event.clear()
@@ -557,7 +555,7 @@ def A_star_main(robot):
 
             if start:
                 path = algorithm_f.read_file(path_file)
-                
+                print(len(path))
                 maze_map = algorithm_f.read_file(maze_file)
                 var.maze_map_global = maze_map
                 
@@ -627,6 +625,8 @@ def A_star_main_modified(robot):
     cost = {}
     parent = {} #propably not needed anymore
     path = []
+
+    time_sum = 0.0 
     
     current_destination = robot_position
     cost[robot_position] = [0, algorithm_f.calc_cost(robot_position, target)]
