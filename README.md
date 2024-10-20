@@ -3,6 +3,30 @@
 
 This project was created as a part of diploma thesis, which goal was to compare a few path planning algorithms with a use of mobile robot in simulated environment. Principle of operation of the program is based on MicroMouse competition, so it can serve as a platform/base for testing other control algorithms for MicroMouse or to learn about those already implemented.
 ![](Media/first.png)
+## How to run
+
+Before anything download and install Webots simulator in version R2023a (newer versions also should work) and Python3 on your PC. Optionally use VS Code editor.
+1. Configure Webots
+  
+    a) Without VS Code / any external code editor 
+    1. Open one of the worlds .wbt file from the project.
+    2. Change controller of e-puck robot in Webots project from extern to *Maze_solver_py*. For each world this operation must be done sepearately. **Webots controller module won’t be recognised and syntax suggestions won’t work in external editor.** 
+    
+    b) With VS Code (preferred)
+    1. Open a Webots/lib/controller folder in VS Code and create *setup.py* file (you may need to run VS code as admin).
+    2. Paste a following code into file:
+    ```python
+    from setuptools import setup
+
+    setup(name='webots', version='1.0', packages=['controller', 'vehicle'])
+    ```
+    3. Run in terminal command *python setup.py sdist* . It will create a source distribution for python package in dist folder.
+    4. Run *pip install webots --no-index --find-links "file://C:\\path\\to\\dist"*. If there is an error about wrong version of *setuptools*, omit *--no-index* flag in command to allow pip to search for package outside of local directory.
+    5. Go back to the project. A controller module now should be recognised by editor.
+2. Add Results folder in *Maze_solver_py* directory with appropriate subfolders for each maze – They are not copied with repo. For example, if you want to use **Forbot** maze (listed in *Constants.py*) you need to create a *Forbot* directory in *Results* folder. Otherwise a ‘no such file or directory’ error will occur.
+3. Open terminal in Maze_solver_py directory. Go to Webots simulation and run it, then run *main.py*. A simulation should execute and a window with maze drawing should pop up.
+4. During a searching or speedrun information about the process is logged in terminal. After completing a course, the *run time* is printed and prompt to *press any key to end the program* appears.
+
 ## Features
 
 - Simulation made in Webots application which contains 10 worlds with 10 mazes which were used in MicroMouse competitions in a past.
