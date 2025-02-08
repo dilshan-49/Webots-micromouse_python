@@ -11,7 +11,7 @@ ALGORITHM = 2
 
 # 1 - Forbot, 2 - Taiwan2015, 3 - Apec2010, 4 - UK2016, 5 - Higashi2017_mod,
 # 6 - Japan2013eq, 7 - Kankou2003, 8 - Japan2011, 9 - Japan1987, 10 - Kor88
-MAZE_LAYOUT = 8
+MAZE_LAYOUT = 1
 
 # 1- print sensors values etc. for testing, 0 - no prints
 TESTING = 0
