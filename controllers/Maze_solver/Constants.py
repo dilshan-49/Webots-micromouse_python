@@ -7,7 +7,7 @@ MODE = 1
 
 # 1 - keyboard/manual, 2 - floodfill, 3 - deep first search (DFS),
 # 4 - breadth first search (BFS), 5 - A*, 6 - A* modified
-ALGORITHM = 2          
+ALGORITHM = 4      
 
 # 1 - Forbot, 2 - Taiwan2015, 3 - Apec2010, 4 - UK2016, 5 - Higashi2017_mod,
 # 6 - Japan2013eq, 7 - Kankou2003, 8 - Japan2011, 9 - Japan1987, 10 - Kor88
